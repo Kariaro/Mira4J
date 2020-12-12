@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import io.netty.channel.*;
 import io.netty.channel.socket.DatagramChannel;
 
-public class ConnectionManager extends SimpleChannelInboundHandler<Packet<?>> {
+public class ClientConnectionManager extends SimpleChannelInboundHandler<Packet<?>> {
     
     private final Queue<Packet<?>> packetQueue = new ConcurrentLinkedQueue<>();
     public DatagramChannel channel;
@@ -38,10 +38,6 @@ public class ConnectionManager extends SimpleChannelInboundHandler<Packet<?>> {
             e.printStackTrace();
         }
     }
-    
-//    public boolean hasChannel() {
-//        return channel != null;
-//    }
     
     public boolean hasClient() {
         return channel != null && (!hasRemote || channel.isConnected()) && channel.isOpen();
@@ -100,7 +96,7 @@ public class ConnectionManager extends SimpleChannelInboundHandler<Packet<?>> {
 
     public void disconnect() {
         hasRemote = false;
-        if(this.channel == null) return;
+        if(channel == null) return;
         
         ChannelFuture channelfuture = this.channel.disconnect();
         channelfuture.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);

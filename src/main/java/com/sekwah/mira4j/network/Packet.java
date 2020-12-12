@@ -6,7 +6,7 @@ public interface Packet<T> {
     void forwardPacket(T listener);
     
     /**
-     * Convert the value from {{@link #writeData(PacketBuf)} to a byte array
+     * Convert the value from {@link #writeData(PacketBuf)} to a byte array
      */
     default byte[] toBytes() {
         PacketBuf buf = PacketBuf.create(65536);

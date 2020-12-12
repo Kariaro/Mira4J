@@ -1,8 +1,9 @@
-package com.sekwah.mira4j.network.inbound.packets;
+package com.sekwah.mira4j.network.decoder;
 
 import com.sekwah.mira4j.network.Packet;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.MessageType;
+import com.sekwah.mira4j.network.inbound.packets.ClientListener;
 
 public class HazelMessage implements Packet<ClientListener> {
     private int type;

@@ -5,8 +5,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.sekwah.mira4j.Mira4J;
+import com.sekwah.mira4j.network.decoder.HazelMessage;
 import com.sekwah.mira4j.network.inbound.packets.*;
+import com.sekwah.mira4j.network.inbound.packets.hazel.GameData;
 import com.sekwah.mira4j.network.inbound.packets.hazel.HostGamePacket;
+import com.sekwah.mira4j.network.outbound.packets.JoinGame;
+import com.sekwah.mira4j.network.outbound.packets.JoinedGame;
 
 public class Packets {
     private static final Map<PacketType, Class<? extends Packet<?>>> packets;
@@ -24,6 +28,9 @@ public class Packets {
 
         hazel_packets = new HashMap<>();
         hazel_packets.put(MessageType.HostGame, HostGamePacket.class);
+        hazel_packets.put(MessageType.JoinGame, JoinGame.class);
+        hazel_packets.put(MessageType.JoinedGame, JoinedGame.class);
+        hazel_packets.put(MessageType.GameData, GameData.class);
     }
     
     public static Packet<?> getPacketFromType(PacketType type) {
@@ -154,6 +161,89 @@ public class Packets {
         
         public static MessageType fromId(int id) {
             for (MessageType type : values()) {
+                if (type.id == id) {
+                    return type;
+                }
+            }
+            return null;
+        }
+    }
+    
+    public enum GameDataType {
+        Data(1),
+        RPC(2),
+        // ???
+        Spawn(4),
+        Despawn(5),
+        SceneChange(6),
+        Ready(7),
+        ChangeSettings(8),
+        ;
+        
+        final int id;
+        GameDataType(int id) {
+            this.id = id;
+        }
+        
+        public int getId() {
+            return id;
+        }
+        
+        public static GameDataType fromId(int id) {
+            for (GameDataType type : values()) {
+                if (type.id == id) {
+                    return type;
+                }
+            }
+            return null;
+        }
+    }
+    
+    public enum RPCType {
+        PlayAnimation(0x00),
+        CompleteTask(0x01),
+        SyncSettings(0x02),
+        SetInfected(0x03),
+        Exiled(0x04),
+        CheckName(0x05),
+        SetName(0x06),
+        CheckColor(0x07),
+        SetColor(0x08),
+        SetHat(0x09),
+        SetSkin(0x0a),
+        ReportDeadBody(0x0b),
+        MurderPlayer(0x0c),
+        SendChat(0x0d),
+        StartMeeting(0x0e),
+        SetScanner(0x0f),
+        SendChatNote(0x10),
+        SetPet(0x11),
+        SetStartCounter(0x12),
+        EnterVent(0x13),
+        ExitVent(0x14),
+        SnapTo(0x15),
+        Close(0x16),
+        VotingComplete(0x17),
+        CastVote(0x18),
+        ClearVote(0x19),
+        AddVote(0x1a),
+        CloseDoorsOfType(0x1b),
+        RepairSystem(0x1c),
+        SetTasks(0x1d),
+        UpdateGameData(0x1e)
+        ;
+        
+        final int id;
+        private RPCType(int id) {
+            this.id = id;
+        }
+        
+        public int getId() {
+            return id;
+        }
+        
+        public static RPCType fromId(int id) {
+            for (RPCType type : values()) {
                 if (type.id == id) {
                     return type;
                 }

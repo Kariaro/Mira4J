@@ -25,7 +25,7 @@ public enum Color {
 
     public static Color fromId(int id) {
         for (Color color : values()) {
-            if (color.getId() == id) {
+            if (color.id == id) {
                 return color;
             }
         }

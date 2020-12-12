@@ -1,10 +1,9 @@
 package com.sekwah.mira4j.data;
 
+import java.io.*;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import java.io.*;
-import java.lang.reflect.Type;
 
 public class DataStorage {
 

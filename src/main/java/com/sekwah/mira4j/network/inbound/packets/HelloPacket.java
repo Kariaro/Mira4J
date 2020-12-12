@@ -5,12 +5,16 @@ import com.sekwah.mira4j.network.PacketBuf;
 
 public class HelloPacket implements Packet<ClientListener> {
     private int nonce;
-    private byte[] data;
+    private byte hazelVersion;
+    private int version;
+    private String username;
     
     @Override
     public void readData(PacketBuf reader) {
         nonce = reader.readUnsignedShortBE();
-        data = reader.readBytes(reader.readableBytes());
+        hazelVersion = reader.readByte();
+        version = reader.readInt();
+        username = reader.readString();
     }
 
     @Override
@@ -25,7 +29,15 @@ public class HelloPacket implements Packet<ClientListener> {
         return nonce;
     }
     
-    public byte[] getData() {
-        return data;
+    public byte getHazelVersion() {
+        return hazelVersion;
+    }
+    
+    public int getVersion() {
+        return version;
+    }
+    
+    public String getUsername() {
+        return username;
     }
 }

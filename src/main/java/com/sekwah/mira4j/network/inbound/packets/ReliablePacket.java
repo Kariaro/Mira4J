@@ -6,6 +6,7 @@ import java.util.List;
 import com.sekwah.mira4j.network.Packet;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.decoder.HazelDecoder;
+import com.sekwah.mira4j.network.decoder.HazelMessage;
 
 public class ReliablePacket implements Packet<ClientListener> {
     private int nonce;
@@ -31,10 +32,9 @@ public class ReliablePacket implements Packet<ClientListener> {
         
         PacketBuf wrap = PacketBuf.wrap(data);
         messages = new ArrayList<>();
-        int max_tries = 10;
-        while(wrap.readableBytes() > 0 && (max_tries-- > 0)) {
-            HazelMessage msg = HazelDecoder.decode(wrap);
-            if(msg == null) continue;
+        
+        HazelMessage msg;
+        while((msg = HazelDecoder.decode(wrap)) != null) {
             messages.add(msg);
         }
     }

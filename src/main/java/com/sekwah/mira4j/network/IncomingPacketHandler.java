@@ -11,9 +11,9 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
 
 public class IncomingPacketHandler extends SimpleChannelInboundHandler<DatagramPacket> {
-    private final ConnectionManager manager;
+    private final ClientConnectionManager manager;
     
-    public IncomingPacketHandler(ConnectionManager manager) {
+    public IncomingPacketHandler(ClientConnectionManager manager) {
         this.manager = manager;
     }
     
@@ -28,8 +28,10 @@ public class IncomingPacketHandler extends SimpleChannelInboundHandler<DatagramP
         buf.readBytes(packetBuffer);
         buf.resetReaderIndex();
         
-        Mira4J.LOGGER.info("Recieved Packet {}", Arrays.toString(packetBuffer));
-        Mira4J.LOGGER.info("Packet type {} {}", packetBuffer[0], Packets.PacketType.fromId(packetBuffer[0]).toString());
+        PacketType type = Packets.PacketType.fromId(packetBuffer[0]);
+        if(type != PacketType.PING) {
+            Mira4J.LOGGER.info("Recieved Packet {} {}", type.toString(), Arrays.toString(packetBuffer));
+        }
         
         decode(ctx, buf);
     }

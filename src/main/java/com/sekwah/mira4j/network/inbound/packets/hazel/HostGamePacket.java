@@ -2,8 +2,8 @@ package com.sekwah.mira4j.network.inbound.packets.hazel;
 
 import com.sekwah.mira4j.game.GameOptionsData;
 import com.sekwah.mira4j.network.PacketBuf;
+import com.sekwah.mira4j.network.decoder.HazelMessage;
 import com.sekwah.mira4j.network.inbound.packets.ClientListener;
-import com.sekwah.mira4j.network.inbound.packets.HazelMessage;
 
 public class HostGamePacket extends HazelMessage {
     private GameOptionsData data;

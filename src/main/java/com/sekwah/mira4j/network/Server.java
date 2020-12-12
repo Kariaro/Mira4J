@@ -4,12 +4,10 @@ import static com.sekwah.mira4j.Mira4J.*;
 
 import java.util.*;
 
-import com.sekwah.mira4j.Mira4J;
 import com.sekwah.mira4j.config.ServerConfig;
 import com.sekwah.mira4j.network.inbound.packets.ClientListener;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
@@ -21,7 +19,7 @@ public class Server implements Runnable {
     private final int port;
     private final String address;
 
-    private final List<ConnectionManager> managers = Collections.synchronizedList(new ArrayList<ConnectionManager>());
+    private final List<ClientConnectionManager> managers = Collections.synchronizedList(new ArrayList<ClientConnectionManager>());
     private final Thread tickThread = new Thread(this);
     
     public static Server getInstance() {
@@ -38,7 +36,7 @@ public class Server implements Runnable {
     public void start() throws Exception {
         final NioEventLoopGroup group = new NioEventLoopGroup();
         try {
-            tickThread.setDaemon(true); // tell the vm not to wait for this thread to close
+            tickThread.setDaemon(true);
             tickThread.start();
             
             final Bootstrap b = new Bootstrap();
@@ -47,7 +45,7 @@ public class Server implements Runnable {
                     .handler(new ChannelInitializer<DatagramChannel>() {
                         @Override
                         public void initChannel(final DatagramChannel ch) throws Exception {
-                            ConnectionManager manager = new ConnectionManager();
+                            ClientConnectionManager manager = new ClientConnectionManager();
                             
                             ChannelPipeline p = ch.pipeline();
                             p.addLast(
@@ -70,11 +68,10 @@ public class Server implements Runnable {
     
     public void tick() {
         synchronized(managers) {
-            Iterator<ConnectionManager> iterator = managers.iterator();
+            Iterator<ClientConnectionManager> iterator = managers.iterator();
             while(iterator.hasNext()) {
-                ConnectionManager manager = iterator.next();
+                ClientConnectionManager manager = iterator.next();
                 
-                // Mira4J.LOGGER.info("hasClient: {} {}", manager, manager.hasClient());
                 if(manager.hasClient()) {
                     try {
                         manager.tick();
