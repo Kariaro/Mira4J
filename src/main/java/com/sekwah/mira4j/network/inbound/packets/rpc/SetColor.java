@@ -3,7 +3,7 @@ package com.sekwah.mira4j.network.inbound.packets.rpc;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets;
 
-public class SetColor implements RPCObject {
+public class SetColor implements RPCMessage {
     private int colorId;
     
     public SetColor() {

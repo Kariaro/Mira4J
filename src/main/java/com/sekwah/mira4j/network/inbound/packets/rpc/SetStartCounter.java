@@ -3,7 +3,7 @@ package com.sekwah.mira4j.network.inbound.packets.rpc;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets;
 
-public class SetStartCounter implements RPCObject {
+public class SetStartCounter implements RPCMessage {
     private int sequenceId;
     private int timeRemaining;
     

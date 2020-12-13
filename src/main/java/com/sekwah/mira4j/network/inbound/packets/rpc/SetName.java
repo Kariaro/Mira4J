@@ -3,7 +3,7 @@ package com.sekwah.mira4j.network.inbound.packets.rpc;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets;
 
-public class SetName implements RPCObject {
+public class SetName implements RPCMessage {
     private String name;
     
     public SetName() {

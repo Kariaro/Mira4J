@@ -3,7 +3,7 @@ package com.sekwah.mira4j.network.inbound.packets.rpc;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets;
 
-public class CastVote implements RPCObject {
+public class CastVote implements RPCMessage {
     private int votingPlayerId;
     private int suspectPlayerId;
     

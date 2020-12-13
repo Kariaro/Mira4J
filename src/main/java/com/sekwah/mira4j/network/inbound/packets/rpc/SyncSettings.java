@@ -4,7 +4,7 @@ import com.sekwah.mira4j.game.GameOptionsData;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets;
 
-public class SyncSettings implements RPCObject {
+public class SyncSettings implements RPCMessage {
     private GameOptionsData data;
     
     public SyncSettings() {

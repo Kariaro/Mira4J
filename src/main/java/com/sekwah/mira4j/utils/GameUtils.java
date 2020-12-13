@@ -28,7 +28,7 @@ public class GameUtils {
         }
     }
     
-    public static int getIntFromGameId(String code) {
+    public static int getIntFromGameString(String code) {
         code = code.toUpperCase();
         if(code.length() == 4) {
             return ((code.charAt(0) & 0xff))
@@ -52,5 +52,20 @@ public class GameUtils {
         int lastFour = (third + 26 * (fourth + 26 * (fifth + 26 * sixth)));
         
         return firstTwo | ((lastFour << 10) & 0x3FFFFC00) | 0x80000000;
+    }
+    
+    public static String generateGameString(int value) {
+        char[] chars = new char[6];
+        for(int i = 0; i < 6; i++) {
+            int letter = (value % CHAR_SET.length);
+            
+            chars[i] = CHAR_SET[letter];
+            value /= CHAR_SET.length;
+            if(value != 0) {
+                value -= 1;
+            }
+        }
+        
+        return new String(chars);
     }
 }

@@ -1,28 +1,27 @@
-package com.sekwah.mira4j.network.outbound.packets;
+package com.sekwah.mira4j.network.inbound.packets.hazel;
 
-import com.sekwah.mira4j.game.Lobby;
+import com.sekwah.mira4j.game.GameLobby;
 import com.sekwah.mira4j.game.Player;
+import com.sekwah.mira4j.network.ClientListener;
 import com.sekwah.mira4j.network.PacketBuf;
-import com.sekwah.mira4j.network.Packets.MessageType;
-import com.sekwah.mira4j.network.decoder.HazelMessage;
+import com.sekwah.mira4j.network.Packets.HazelType;
 
-public class JoinedGame extends HazelMessage {
-    private Lobby lobby;
+public class JoinedGame implements HazelMessage {
+    private GameLobby lobby;
     private Player player;
     
-    public JoinedGame(Player player, Lobby lobby) {
-        super(MessageType.JoinedGame);
+    public JoinedGame(Player player, GameLobby lobby) {
         this.player = player;
         this.lobby = lobby;
     }
     
     @Override
-    public void readData(PacketBuf reader) {
+    public void read(PacketBuf reader) {
         
     }
     
     @Override
-    public void writeData0(PacketBuf writer) {
+    public void write(PacketBuf writer) {
         writer.writeInt(lobby.getGameId());
         writer.writeInt(player.getClientId());
         writer.writeInt(lobby.getHost().getClientId());
@@ -35,5 +34,16 @@ public class JoinedGame extends HazelMessage {
             if(plr.getClientId() == player.getClientId()) continue;
             writer.writeUnsignedPackedInt(plr.getClientId());
         }
+    }
+    
+    @Override
+    public int id() {
+        return HazelType.JoinedGame.getId();
+    }
+    
+    @Override
+    public void forwardPacket(ClientListener listener) {
+        // TODO Auto-generated method stub
+        
     }
 }

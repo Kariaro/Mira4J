@@ -3,7 +3,7 @@ package com.sekwah.mira4j.network.inbound.packets.rpc;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets;
 
-public class SetSkin implements RPCObject {
+public class SetSkin implements RPCMessage {
     private int skinId;
     
     public SetSkin() {

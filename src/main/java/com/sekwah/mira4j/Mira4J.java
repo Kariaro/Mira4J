@@ -2,6 +2,7 @@ package com.sekwah.mira4j;
 
 import com.sekwah.mira4j.config.ServerConfig;
 import com.sekwah.mira4j.data.DataStorage;
+import com.sekwah.mira4j.game.GameManager;
 import com.sekwah.mira4j.network.Server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,6 +13,7 @@ import java.net.BindException;
 public class Mira4J {
 
     private final DataStorage dataStorage;
+    private final GameManager gameManager;
     private final Server server;
 
     private final String SERVER_SETTINGS_LOC = "serversettings.json";
@@ -24,8 +26,9 @@ public class Mira4J {
         ServerConfig serverConfig = dataStorage.loadJson(ServerConfig.class, SERVER_SETTINGS_LOC);
 
         dataStorage.storeJson(serverConfig, SERVER_SETTINGS_LOC);
-
-        server = new Server(serverConfig);
+        gameManager = new GameManager();
+        
+        server = new Server(gameManager, serverConfig);
 
         try {
             server.start();

@@ -5,7 +5,7 @@ import java.util.Arrays;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets;
 
-public class SetInfected implements RPCObject {
+public class SetInfected implements RPCMessage {
     private byte[] impostors;
     
     public SetInfected() {

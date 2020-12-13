@@ -3,7 +3,7 @@ package com.sekwah.mira4j.network.inbound.packets.rpc;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets;
 
-public class RepairSystem implements RPCObject {
+public class RepairSystem implements RPCMessage {
     private int systemId;
     private int playerControlNetId;
     private int amount;

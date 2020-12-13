@@ -3,7 +3,7 @@ package com.sekwah.mira4j.network.inbound.packets.rpc;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets;
 
-public class CheckName implements RPCObject {
+public class CheckName implements RPCMessage {
     private String name;
     
     public CheckName() {

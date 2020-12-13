@@ -9,7 +9,7 @@ public interface Packet<T> {
      * Convert the value from {@link #writeData(PacketBuf)} to a byte array
      */
     default byte[] toBytes() {
-        PacketBuf buf = PacketBuf.create(65536);
+        PacketBuf buf = PacketBuf.create(4096);
         writeData(buf);
         byte[] array = buf.readBytes(buf.readableBytes());
         

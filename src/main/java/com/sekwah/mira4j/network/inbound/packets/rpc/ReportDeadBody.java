@@ -3,7 +3,7 @@ package com.sekwah.mira4j.network.inbound.packets.rpc;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets;
 
-public class ReportDeadBody implements RPCObject {
+public class ReportDeadBody implements RPCMessage {
     private int victimId;
     
     public ReportDeadBody() {

@@ -3,34 +3,36 @@ package com.sekwah.mira4j.network.inbound.packets.hazel;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sekwah.mira4j.game.GameLobby;
+import com.sekwah.mira4j.network.ClientListener;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.GameDataType;
-import com.sekwah.mira4j.network.Packets.MessageType;
+import com.sekwah.mira4j.network.Packets.HazelType;
 import com.sekwah.mira4j.network.decoder.GameDataDecoder;
 import com.sekwah.mira4j.network.decoder.GameDataMessage;
 import com.sekwah.mira4j.network.decoder.GameDataMessage.Despawn;
 import com.sekwah.mira4j.network.decoder.GameDataMessage.Ready;
 import com.sekwah.mira4j.network.decoder.GameDataMessage.SceneChange;
-import com.sekwah.mira4j.network.decoder.HazelMessage;
-import com.sekwah.mira4j.network.inbound.packets.ClientListener;
 import com.sekwah.mira4j.network.inbound.packets.rpc.RPC;
 
-public class GameData extends HazelMessage {
+public class GameData implements HazelMessage {
     private int gameId;
     private List<GameDataMessage> messages;
     
     public GameData() {
-        super(MessageType.GameData);
+        
     }
     
     public GameData(int gameId, List<GameDataMessage> messages) {
-        super(MessageType.GameData);
         this.gameId = gameId;
         this.messages = messages;
     }
     
+    public GameData(GameLobby lobby, GameDataMessage... messages) {
+        this(lobby.getGameId(), messages);
+    }
+    
     public GameData(int gameId, GameDataMessage... messages) {
-        super(MessageType.GameData);
         this.gameId = gameId;
         this.messages = new ArrayList<>();
         for(GameDataMessage msg : messages) {
@@ -39,8 +41,8 @@ public class GameData extends HazelMessage {
     }
     
     @Override
-    public void readData(PacketBuf reader) {
-        this.gameId = reader.readInt();
+    public void read(PacketBuf reader) {
+        gameId = reader.readInt();
         messages = new ArrayList<>();
         GameDataMessage msg;
         while((msg = GameDataDecoder.decode(reader)) != null) {
@@ -49,7 +51,7 @@ public class GameData extends HazelMessage {
     }
     
     @Override
-    public void writeData0(PacketBuf writer) {
+    public void write(PacketBuf writer) {
         writer.writeInt(gameId);
         
         for(GameDataMessage msg : messages) {
@@ -97,7 +99,11 @@ public class GameData extends HazelMessage {
             // ChangeSettings
         }
     }
-
+    
+    @Override
+    public int id() {
+        return HazelType.GameData.getId();
+    }
     @Override
     public void forwardPacket(ClientListener listener) {
         listener.onGameData(this);

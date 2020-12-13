@@ -12,9 +12,9 @@ import com.sekwah.mira4j.network.decoder.BufferObject;
 import com.sekwah.mira4j.network.decoder.GameDataMessage;
 
 public class RPC implements BufferObject, GameDataMessage {
-    private static final Map<RPCType, Class<? extends RPCObject>> map;
+    private static final Map<RPCType, Class<? extends RPCMessage>> map;
     static {
-        Map<RPCType, Class<? extends RPCObject>> m = new HashMap<>();
+        Map<RPCType, Class<? extends RPCMessage>> m = new HashMap<>();
         map = Collections.unmodifiableMap(m);
         
         m.put(RPCType.PlayAnimation, PlayAnimation.class);
@@ -51,22 +51,22 @@ public class RPC implements BufferObject, GameDataMessage {
         m.put(RPCType.UpdateGameData, UpdateGameData.class); // 30/30
     }
     
-    private static RPCObject newInstance(int id) {
+    private static RPCMessage newInstance(int id) {
         RPCType type = RPCType.fromId(id);
-        if(type == null) {
+        if (type == null) {
             Mira4J.LOGGER.warn("Unknown RPC type id {}", id);
             return null;
         }
         
-        Class<? extends RPCObject> clazz = map.get(type);
-        if(clazz == null) {
+        Class<? extends RPCMessage> clazz = map.get(type);
+        if (clazz == null) {
             Mira4J.LOGGER.warn("Unknown RPC type {} does not have a class", type);
             return null;
         }
         
         try {
             return clazz.getConstructor().newInstance();
-        } catch(InstantiationException | IllegalAccessException | IllegalArgumentException
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
            | InvocationTargetException | NoSuchMethodException | SecurityException e) {
             Mira4J.LOGGER.error("Failed to create RPC class of type {}", type);
             e.printStackTrace();
@@ -76,13 +76,13 @@ public class RPC implements BufferObject, GameDataMessage {
     }
     
     private int senderNetId;
-    private RPCObject message;
+    private RPCMessage message;
     
     public RPC() {
         
     }
     
-    public RPC(int senderNetId, RPCObject message) {
+    public RPC(int senderNetId, RPCMessage message) {
         this.senderNetId = senderNetId;
         this.message = message;
     }
@@ -92,7 +92,7 @@ public class RPC implements BufferObject, GameDataMessage {
         
         int callId = reader.readUnsignedByte();
         message = newInstance(callId);
-        if(message == null) return;
+        if (message == null) return;
         
         message.read(reader);
     }
@@ -100,14 +100,14 @@ public class RPC implements BufferObject, GameDataMessage {
     public void write(PacketBuf writer) {
         writer.writeUnsignedPackedInt(senderNetId);
         writer.writeUnsignedByte(message.id());
-        message.write(writer);;
+        message.write(writer);
     }
     
     public int getSenderNetId() {
         return senderNetId;
     }
     
-    public RPCObject getMessage() {
+    public RPCMessage getMessage() {
         return message;
     }
     

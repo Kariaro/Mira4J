@@ -3,7 +3,7 @@ package com.sekwah.mira4j.network.inbound.packets.rpc;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets;
 
-public class AddVote implements RPCObject {
+public class AddVote implements RPCMessage {
     private int votingClientId;
     private int targetClientId;
     

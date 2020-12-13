@@ -3,10 +3,11 @@ package com.sekwah.mira4j.network.inbound.packets;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sekwah.mira4j.network.ClientListener;
 import com.sekwah.mira4j.network.Packet;
 import com.sekwah.mira4j.network.PacketBuf;
-import com.sekwah.mira4j.network.decoder.HazelDecoder;
-import com.sekwah.mira4j.network.decoder.HazelMessage;
+import com.sekwah.mira4j.network.inbound.packets.hazel.Hazel;
+import com.sekwah.mira4j.network.inbound.packets.hazel.HazelMessage;
 
 public class ReliablePacket implements Packet<ClientListener> {
     private int nonce;
@@ -20,7 +21,7 @@ public class ReliablePacket implements Packet<ClientListener> {
         this.nonce = nonce;
         messages = new ArrayList<>();
         
-        for(HazelMessage msg : args) {
+        for (HazelMessage msg : args) {
             messages.add(msg);
         }
     }
@@ -28,13 +29,10 @@ public class ReliablePacket implements Packet<ClientListener> {
     @Override
     public void readData(PacketBuf reader) {
         nonce = reader.readUnsignedShortBE();
-        byte[] data = reader.readBytes(reader.readableBytes());
-        
-        PacketBuf wrap = PacketBuf.wrap(data);
         messages = new ArrayList<>();
         
         HazelMessage msg;
-        while((msg = HazelDecoder.decode(wrap)) != null) {
+        while ((msg = Hazel.read(reader)) != null) {
             messages.add(msg);
         }
     }
@@ -42,8 +40,8 @@ public class ReliablePacket implements Packet<ClientListener> {
     @Override
     public void writeData(PacketBuf writer) {
         writer.writeUnsignedShortBE(nonce);
-        for(HazelMessage msg : messages) {
-            msg.writeData(writer);
+        for (HazelMessage msg : messages) {
+            Hazel.write(writer, msg);
         }
     }
 

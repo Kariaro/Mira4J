@@ -26,4 +26,30 @@ public class GameOptionsData {
     public boolean visualTasks = true;
     public boolean anonymousVotes = false;
     public int taskBarUpdates = 0;
+    
+    
+    public void load(GameOptionsData data) {
+        version = data.version;
+        maxPlayers = data.maxPlayers;
+        keywords = data.keywords;
+        maps = data.maps;
+        playerSpeedModifier = data.playerSpeedModifier;
+        crewmateLightModifier = data.crewmateLightModifier;
+        impostorLightModifier = data.impostorLightModifier;
+        killCooldown = data.killCooldown;
+        numCommonTasks = data.numCommonTasks;
+        numLongTasks = data.numLongTasks;
+        numShortTasks = data.numShortTasks;
+        numEmergencyMeetings = data.numEmergencyMeetings;
+        numImpostors = data.numImpostors;
+        killDistance = data.killDistance;
+        discussionTime = data.discussionTime;
+        votingTime = data.votingTime;
+        isDefaults = data.isDefaults;
+        emergencyCooldown = data.emergencyCooldown;
+        confirmEjects = data.confirmEjects;
+        visualTasks = data.visualTasks;
+        anonymousVotes = data.anonymousVotes;
+        taskBarUpdates = data.taskBarUpdates;
+    }
 }

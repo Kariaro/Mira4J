@@ -1,4 +1,4 @@
-package com.sekwah.mira4j.network;
+package com.sekwah.mira4j.utils;
 
 /**
  * Random tests and things that arnt needed for now

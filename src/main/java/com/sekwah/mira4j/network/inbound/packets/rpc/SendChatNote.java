@@ -3,7 +3,7 @@ package com.sekwah.mira4j.network.inbound.packets.rpc;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets;
 
-public class SendChatNote implements RPCObject {
+public class SendChatNote implements RPCMessage {
     private int playerId;
     private int chatNoteType;
     

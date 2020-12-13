@@ -4,7 +4,7 @@ import com.sekwah.mira4j.config.Vector2;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets;
 
-public class SnapTo implements RPCObject {
+public class SnapTo implements RPCMessage {
     private Vector2 position;
     private int lastSequenceId;
     

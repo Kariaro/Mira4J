@@ -5,7 +5,7 @@ import java.util.Arrays;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets;
 
-public class VotingComplete implements RPCObject {
+public class VotingComplete implements RPCMessage {
     private byte[] voteStates;
     private int exiledPlayerId;
     private boolean isTie;

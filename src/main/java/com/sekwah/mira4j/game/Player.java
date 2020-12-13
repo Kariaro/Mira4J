@@ -1,20 +1,20 @@
 package com.sekwah.mira4j.game;
 
 public class Player {
-    private boolean isImposter = false;
-    private String username;
+    private boolean isImposter;
+    private String name;
     private int clientId;
     
     public Player(int clientId) {
         this.clientId = clientId;
     }
     
-    public String getUsername() {
-        return username;
+    public String getName() {
+        return name;
     }
     
-    public void setUsername(String username) {
-        this.username = username;
+    public void setName(String name) {
+        this.name = name;
     }
     
     public boolean isImposter() {

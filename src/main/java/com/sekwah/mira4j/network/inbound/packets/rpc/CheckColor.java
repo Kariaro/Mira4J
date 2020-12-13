@@ -3,7 +3,7 @@ package com.sekwah.mira4j.network.inbound.packets.rpc;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets;
 
-public class CheckColor implements RPCObject {
+public class CheckColor implements RPCMessage {
     private int colorId;
     
     public CheckColor() {

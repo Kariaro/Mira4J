@@ -3,7 +3,7 @@ package com.sekwah.mira4j.network.inbound.packets.rpc;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets;
 
-public class Exiled implements RPCObject {
+public class Exiled implements RPCMessage {
     
     public void read(PacketBuf reader) {
         

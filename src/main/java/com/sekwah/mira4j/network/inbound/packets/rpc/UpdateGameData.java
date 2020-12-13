@@ -6,7 +6,7 @@ import java.util.List;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets;
 
-public class UpdateGameData implements RPCObject {
+public class UpdateGameData implements RPCMessage {
     private List<PlayerInfo> list;
     
     public UpdateGameData() {
@@ -20,14 +20,14 @@ public class UpdateGameData implements RPCObject {
     
     public UpdateGameData(PlayerInfo... array) {
         list = new ArrayList<>();
-        for(PlayerInfo info : array) {
+        for (PlayerInfo info : array) {
             list.add(info);
         }
     }
     
     public void read(PacketBuf reader) {
         list = new ArrayList<>();
-        while(reader.readableBytes() > 0) {
+        while (reader.readableBytes() > 0) {
             int length = reader.readUnsignedShort();
             int playerId = reader.readUnsignedByte();
             byte[] bytes = reader.readBytes(length);
@@ -46,7 +46,7 @@ public class UpdateGameData implements RPCObject {
             int tasks_length = buf.readUnsignedByte();
             info.tasks = new TaskInfo[tasks_length];
             
-            for(int i = 0; i < tasks_length; i++) {
+            for (int i = 0; i < tasks_length; i++) {
                 TaskInfo task = new TaskInfo();
                 task.taskId = buf.readUnsignedPackedInt();
                 task.isCompleted = buf.readBoolean();
@@ -58,7 +58,7 @@ public class UpdateGameData implements RPCObject {
     }
     
     public void write(PacketBuf writer) {
-        for(PlayerInfo info : list) {
+        for (PlayerInfo info : list) {
             PacketBuf buf = PacketBuf.create(4096);
             buf.writeString(info.name);
             buf.writeUnsignedByte(info.colorId);
@@ -67,10 +67,11 @@ public class UpdateGameData implements RPCObject {
             buf.writeUnsignedPackedInt(info.skinId);
             buf.writeUnsignedByte(info.flags);
             buf.writeUnsignedByte(info.tasks.length);
-            for(TaskInfo task : info.tasks) {
+            for (TaskInfo task : info.tasks) {
                 buf.writeUnsignedPackedInt(task.taskId);
                 buf.writeBoolean(task.isCompleted);
             }
+            
             byte[] bytes = buf.readBytes(buf.readableBytes());
             buf.release();
             

@@ -3,7 +3,7 @@ package com.sekwah.mira4j.network.inbound.packets.rpc;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets;
 
-public class SetScanner implements RPCObject {
+public class SetScanner implements RPCMessage {
     private boolean isScanning;
     private int count;
     

@@ -5,7 +5,7 @@ import java.util.Arrays;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets;
 
-public class SetTasks implements RPCObject {
+public class SetTasks implements RPCMessage {
     private int playerId;
     private byte[] tasks;
     

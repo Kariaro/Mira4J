@@ -3,7 +3,7 @@ package com.sekwah.mira4j.network.inbound.packets.rpc;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets;
 
-public class CompleteTask implements RPCObject {
+public class CompleteTask implements RPCMessage {
     private int taskIndex;
     
     public CompleteTask() {

@@ -1,5 +1,6 @@
 package com.sekwah.mira4j.network.inbound.packets;
 
+import com.sekwah.mira4j.network.ClientListener;
 import com.sekwah.mira4j.network.Packet;
 import com.sekwah.mira4j.network.PacketBuf;
 

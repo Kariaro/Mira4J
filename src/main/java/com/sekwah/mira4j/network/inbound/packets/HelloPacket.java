@@ -1,5 +1,6 @@
 package com.sekwah.mira4j.network.inbound.packets;
 
+import com.sekwah.mira4j.network.ClientListener;
 import com.sekwah.mira4j.network.Packet;
 import com.sekwah.mira4j.network.PacketBuf;
 
@@ -18,7 +19,9 @@ public class HelloPacket implements Packet<ClientListener> {
     }
 
     @Override
-    public void writeData(PacketBuf writer) {}
+    public void writeData(PacketBuf writer) {
+        
+    }
 
     @Override
     public void forwardPacket(ClientListener listener) {

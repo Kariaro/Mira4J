@@ -3,7 +3,7 @@ package com.sekwah.mira4j.network.inbound.packets.rpc;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets;
 
-public class CloseDoorsOfType implements RPCObject {
+public class CloseDoorsOfType implements RPCMessage {
     private int systemId;
     
     public CloseDoorsOfType() {

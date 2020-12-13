@@ -3,7 +3,7 @@ package com.sekwah.mira4j.network.inbound.packets.rpc;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets;
 
-public class SetPet implements RPCObject {
+public class SetPet implements RPCMessage {
     private int petId;
     
     public SetPet() {
