@@ -9,7 +9,7 @@ import com.sekwah.mira4j.Mira4J;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.RPCType;
 import com.sekwah.mira4j.network.decoder.BufferObject;
-import com.sekwah.mira4j.network.decoder.GameDataMessage;
+import com.sekwah.mira4j.network.inbound.packets.gamedata.GameDataMessage;
 
 public class RPC implements BufferObject, GameDataMessage {
     private static final Map<RPCType, Class<? extends RPCMessage>> map;

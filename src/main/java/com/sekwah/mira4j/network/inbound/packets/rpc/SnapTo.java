@@ -2,7 +2,7 @@ package com.sekwah.mira4j.network.inbound.packets.rpc;
 
 import com.sekwah.mira4j.config.Vector2;
 import com.sekwah.mira4j.network.PacketBuf;
-import com.sekwah.mira4j.network.Packets;
+import com.sekwah.mira4j.network.Packets.RPCType;
 
 public class SnapTo implements RPCMessage {
     private Vector2 position;
@@ -28,7 +28,7 @@ public class SnapTo implements RPCMessage {
     }
     
     public int id() {
-        return Packets.RPCType.SnapTo.getId();
+        return RPCType.SnapTo.getId();
     }
     
     public Vector2 getPosition() {

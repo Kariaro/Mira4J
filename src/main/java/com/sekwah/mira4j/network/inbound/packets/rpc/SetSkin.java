@@ -1,7 +1,7 @@
 package com.sekwah.mira4j.network.inbound.packets.rpc;
 
 import com.sekwah.mira4j.network.PacketBuf;
-import com.sekwah.mira4j.network.Packets;
+import com.sekwah.mira4j.network.Packets.RPCType;
 
 public class SetSkin implements RPCMessage {
     private int skinId;
@@ -23,7 +23,7 @@ public class SetSkin implements RPCMessage {
     }
     
     public int id() {
-        return Packets.RPCType.SetSkin.getId();
+        return RPCType.SetSkin.getId();
     }
     
     public int getSkinId() {

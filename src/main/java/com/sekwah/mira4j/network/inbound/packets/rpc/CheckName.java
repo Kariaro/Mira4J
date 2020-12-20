@@ -1,7 +1,7 @@
 package com.sekwah.mira4j.network.inbound.packets.rpc;
 
 import com.sekwah.mira4j.network.PacketBuf;
-import com.sekwah.mira4j.network.Packets;
+import com.sekwah.mira4j.network.Packets.RPCType;
 
 public class CheckName implements RPCMessage {
     private String name;
@@ -23,7 +23,7 @@ public class CheckName implements RPCMessage {
     }
     
     public int id() {
-        return Packets.RPCType.CheckName.getId();
+        return RPCType.CheckName.getId();
     }
     
     public String getName() {

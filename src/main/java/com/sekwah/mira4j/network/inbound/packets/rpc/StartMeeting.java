@@ -1,7 +1,7 @@
 package com.sekwah.mira4j.network.inbound.packets.rpc;
 
 import com.sekwah.mira4j.network.PacketBuf;
-import com.sekwah.mira4j.network.Packets;
+import com.sekwah.mira4j.network.Packets.RPCType;
 
 public class StartMeeting implements RPCMessage {
     private int victimPlayerId;
@@ -23,7 +23,7 @@ public class StartMeeting implements RPCMessage {
     }
     
     public int id() {
-        return Packets.RPCType.StartMeeting.getId();
+        return RPCType.StartMeeting.getId();
     }
     
     public int getVictimPlayerId() {

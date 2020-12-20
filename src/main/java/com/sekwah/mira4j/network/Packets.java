@@ -220,4 +220,68 @@ public class Packets {
             return null;
         }
     }
+    
+    // Testing
+    public enum SpawnType {
+        SHIP_STATUS(0),
+        MEETING_HUD(1),
+        LOBBY_BEHAVIOUR(2),
+        GAME_DATA(3),
+        PLAYER_CONTROL(4),
+        HEADQUARTERS(5),
+        PLANET_MAP(6),
+        APRIL_SHIP_STATUS(7),
+        ;
+        
+        final int id;
+        private SpawnType(int id) {
+            this.id = id;
+        }
+        
+        public int getId() {
+            return id;
+        }
+        
+        public static SpawnType fromId(int id) {
+            for (SpawnType type : values()) {
+                if (type.id == id) {
+                    return type;
+                }
+            }
+            return null;
+        }
+    }
+    
+    public enum NetType {
+        ShipStatus(0),
+        MeetingHud(1),
+        LobbyBehaviour(2),
+        GameData(3),
+        PlayerControl(4),
+        Headquarters(5),
+        PlanetMap(6),
+        AprilShipStatus(7),
+        VoteBanSystem(8),
+        PlayerPhysics(9),
+        CustomNetworkTransform(10),
+        ;
+        
+        final int id;
+        private NetType(int id) {
+            this.id = id;
+        }
+        
+        public int getId() {
+            return id;
+        }
+        
+        public static NetType fromId(int id) {
+            for (NetType type : values()) {
+                if (type.id == id) {
+                    return type;
+                }
+            }
+            return null;
+        }
+    }
 }

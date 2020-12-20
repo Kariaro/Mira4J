@@ -3,7 +3,7 @@ package com.sekwah.mira4j.network.inbound.packets.rpc;
 import java.util.Arrays;
 
 import com.sekwah.mira4j.network.PacketBuf;
-import com.sekwah.mira4j.network.Packets;
+import com.sekwah.mira4j.network.Packets.RPCType;
 
 public class SetInfected implements RPCMessage {
     private byte[] impostors;
@@ -27,7 +27,7 @@ public class SetInfected implements RPCMessage {
     }
     
     public int id() {
-        return Packets.RPCType.SetInfected.getId();
+        return RPCType.SetInfected.getId();
     }
     
     public byte[] getImpostors() {

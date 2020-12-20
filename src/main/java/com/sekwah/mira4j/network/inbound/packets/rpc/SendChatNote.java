@@ -1,7 +1,7 @@
 package com.sekwah.mira4j.network.inbound.packets.rpc;
 
 import com.sekwah.mira4j.network.PacketBuf;
-import com.sekwah.mira4j.network.Packets;
+import com.sekwah.mira4j.network.Packets.RPCType;
 
 public class SendChatNote implements RPCMessage {
     private int playerId;
@@ -27,7 +27,7 @@ public class SendChatNote implements RPCMessage {
     }
     
     public int id() {
-        return Packets.RPCType.SendChatNote.getId();
+        return RPCType.SendChatNote.getId();
     }
     
     public int getPlayerId() {

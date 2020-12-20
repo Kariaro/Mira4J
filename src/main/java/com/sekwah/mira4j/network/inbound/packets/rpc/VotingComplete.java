@@ -3,7 +3,7 @@ package com.sekwah.mira4j.network.inbound.packets.rpc;
 import java.util.Arrays;
 
 import com.sekwah.mira4j.network.PacketBuf;
-import com.sekwah.mira4j.network.Packets;
+import com.sekwah.mira4j.network.Packets.RPCType;
 
 public class VotingComplete implements RPCMessage {
     private byte[] voteStates;
@@ -34,7 +34,7 @@ public class VotingComplete implements RPCMessage {
     }
     
     public int id() {
-        return Packets.RPCType.VotingComplete.getId();
+        return RPCType.VotingComplete.getId();
     }
     
     public byte[] getVoteStates() {

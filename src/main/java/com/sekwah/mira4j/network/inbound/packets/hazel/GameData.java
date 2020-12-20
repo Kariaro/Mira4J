@@ -8,11 +8,11 @@ import com.sekwah.mira4j.network.ClientListener;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.GameDataType;
 import com.sekwah.mira4j.network.Packets.HazelType;
-import com.sekwah.mira4j.network.decoder.GameDataDecoder;
-import com.sekwah.mira4j.network.decoder.GameDataMessage;
-import com.sekwah.mira4j.network.decoder.GameDataMessage.Despawn;
-import com.sekwah.mira4j.network.decoder.GameDataMessage.Ready;
-import com.sekwah.mira4j.network.decoder.GameDataMessage.SceneChange;
+import com.sekwah.mira4j.network.inbound.packets.gamedata.GameDataDecoder;
+import com.sekwah.mira4j.network.inbound.packets.gamedata.GameDataMessage;
+import com.sekwah.mira4j.network.inbound.packets.gamedata.GameDataMessage.Despawn;
+import com.sekwah.mira4j.network.inbound.packets.gamedata.GameDataMessage.Ready;
+import com.sekwah.mira4j.network.inbound.packets.gamedata.GameDataMessage.SceneChange;
 import com.sekwah.mira4j.network.inbound.packets.rpc.RPC;
 
 public class GameData implements HazelMessage {

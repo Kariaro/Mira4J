@@ -1,6 +1,7 @@
 package com.sekwah.mira4j.network;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import com.sekwah.mira4j.config.Vector2;
 import com.sekwah.mira4j.game.GameOptionsData;
@@ -81,6 +82,18 @@ public class PacketBuf {
     
     public float readFloat() {
         return buffer.readFloatLE();
+    }
+    
+    /**
+     * The packet buf returned from this method must call {@link #release()}
+     */
+    public PacketBuf readMessage() {
+        if(readableBytes() < 3) return null; // No header
+        int length = readUnsignedShort();
+        @SuppressWarnings("unused")
+        int typeId = readUnsignedByte(); // Unused!?
+        byte[] bytes = readBytes(length);
+        return PacketBuf.wrap(bytes);
     }
     
     public short readUnsignedByte() {

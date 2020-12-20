@@ -1,7 +1,7 @@
 package com.sekwah.mira4j.network.inbound.packets.rpc;
 
 import com.sekwah.mira4j.network.PacketBuf;
-import com.sekwah.mira4j.network.Packets;
+import com.sekwah.mira4j.network.Packets.RPCType;
 
 public class SetColor implements RPCMessage {
     private int colorId;
@@ -23,7 +23,7 @@ public class SetColor implements RPCMessage {
     }
     
     public int id() {
-        return Packets.RPCType.SetColor.getId();
+        return RPCType.SetColor.getId();
     }
     
     public int getColorId() {

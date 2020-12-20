@@ -2,7 +2,7 @@ package com.sekwah.mira4j.network.inbound.packets.rpc;
 
 import com.sekwah.mira4j.game.GameOptionsData;
 import com.sekwah.mira4j.network.PacketBuf;
-import com.sekwah.mira4j.network.Packets;
+import com.sekwah.mira4j.network.Packets.RPCType;
 
 public class SyncSettings implements RPCMessage {
     private GameOptionsData data;
@@ -24,7 +24,7 @@ public class SyncSettings implements RPCMessage {
     }
     
     public int id() {
-        return Packets.RPCType.SyncSettings.getId();
+        return RPCType.SyncSettings.getId();
     }
     
     public GameOptionsData getData() {

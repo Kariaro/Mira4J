@@ -1,34 +1,8 @@
-package com.sekwah.mira4j.network.decoder;
+package com.sekwah.mira4j.network.inbound.packets.gamedata;
+
+import com.sekwah.mira4j.network.PacketBuf;
 
 public interface GameDataMessage {
-    public class Data implements GameDataMessage {
-        public final int net_id;
-        
-        public Data(int net_id) {
-            this.net_id = net_id;
-        }
-        
-        public String toString() {
-            return "Data { net_id=" + net_id + " }";
-        }
-    }
-    
-    // !!!! Spawn
-    public class Spawn implements GameDataMessage {
-        public final int spawn_type;
-        public final int owner_id;
-        
-        public Spawn(int net_id) {
-            this.spawn_type = net_id;
-            this.owner_id = 0;
-        }
-        
-        public String toString() {
-            return "Spawn { spawn_type=" + spawn_type + ", owner_id=" + owner_id + " }";
-        }
-    }
-    
-    
     public class Despawn implements GameDataMessage {
         public final int net_id;
         
@@ -66,4 +40,12 @@ public interface GameDataMessage {
             return "Ready { client_id=" + client_id + " }";
         }
     }
+    
+    default int id() {
+        return -1;
+    }
+    
+
+    default void read(PacketBuf reader, boolean isSpawning) {}
+    default void write(PacketBuf writer, boolean isSpawning) {}
 }

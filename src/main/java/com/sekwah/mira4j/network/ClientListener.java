@@ -1,16 +1,16 @@
 package com.sekwah.mira4j.network;
 
 import com.sekwah.mira4j.Mira4J;
+import com.sekwah.mira4j.config.PlayerInfo;
 import com.sekwah.mira4j.config.Vector2;
 import com.sekwah.mira4j.game.GameLobby;
 import com.sekwah.mira4j.game.GameManager;
 import com.sekwah.mira4j.game.Player;
 import com.sekwah.mira4j.network.Packets.HazelType;
-import com.sekwah.mira4j.network.decoder.GameDataMessage;
 import com.sekwah.mira4j.network.inbound.packets.*;
+import com.sekwah.mira4j.network.inbound.packets.gamedata.GameDataMessage;
 import com.sekwah.mira4j.network.inbound.packets.hazel.*;
 import com.sekwah.mira4j.network.inbound.packets.rpc.*;
-import com.sekwah.mira4j.network.inbound.packets.rpc.UpdateGameData.PlayerInfo;
 import com.sekwah.mira4j.utils.GameUtils;
 import com.sekwah.mira4j.utils.TestUtil;
 

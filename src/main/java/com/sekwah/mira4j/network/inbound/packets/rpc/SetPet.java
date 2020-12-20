@@ -1,7 +1,7 @@
 package com.sekwah.mira4j.network.inbound.packets.rpc;
 
 import com.sekwah.mira4j.network.PacketBuf;
-import com.sekwah.mira4j.network.Packets;
+import com.sekwah.mira4j.network.Packets.RPCType;
 
 public class SetPet implements RPCMessage {
     private int petId;
@@ -23,7 +23,7 @@ public class SetPet implements RPCMessage {
     }
     
     public int id() {
-        return Packets.RPCType.SetPet.getId();
+        return RPCType.SetPet.getId();
     }
     
     public int getPedId() {

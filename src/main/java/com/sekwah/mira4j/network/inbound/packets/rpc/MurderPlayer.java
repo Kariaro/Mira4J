@@ -1,7 +1,7 @@
 package com.sekwah.mira4j.network.inbound.packets.rpc;
 
 import com.sekwah.mira4j.network.PacketBuf;
-import com.sekwah.mira4j.network.Packets;
+import com.sekwah.mira4j.network.Packets.RPCType;
 
 public class MurderPlayer implements RPCMessage {
     private int victimNetId;
@@ -23,7 +23,7 @@ public class MurderPlayer implements RPCMessage {
     }
     
     public int id() {
-        return Packets.RPCType.MurderPlayer.getId();
+        return RPCType.MurderPlayer.getId();
     }
     
     public int getVictimNetId() {

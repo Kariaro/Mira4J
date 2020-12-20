@@ -3,7 +3,7 @@ package com.sekwah.mira4j.network.inbound.packets.rpc;
 import java.util.Arrays;
 
 import com.sekwah.mira4j.network.PacketBuf;
-import com.sekwah.mira4j.network.Packets;
+import com.sekwah.mira4j.network.Packets.RPCType;
 
 public class SetTasks implements RPCMessage {
     private int playerId;
@@ -31,7 +31,7 @@ public class SetTasks implements RPCMessage {
     }
     
     public int id() {
-        return Packets.RPCType.SetTasks.getId();
+        return RPCType.SetTasks.getId();
     }
     
     public int getPlayerId() {

@@ -1,7 +1,7 @@
 package com.sekwah.mira4j.network.inbound.packets.rpc;
 
 import com.sekwah.mira4j.network.PacketBuf;
-import com.sekwah.mira4j.network.Packets;
+import com.sekwah.mira4j.network.Packets.RPCType;
 
 public class CompleteTask implements RPCMessage {
     private int taskIndex;
@@ -23,7 +23,7 @@ public class CompleteTask implements RPCMessage {
     }
     
     public int id() {
-        return Packets.RPCType.CompleteTask.getId();
+        return RPCType.CompleteTask.getId();
     }
     
     public int getTaskIndex() {

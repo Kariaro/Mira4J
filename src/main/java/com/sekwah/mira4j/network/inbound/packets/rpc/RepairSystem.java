@@ -1,7 +1,7 @@
 package com.sekwah.mira4j.network.inbound.packets.rpc;
 
 import com.sekwah.mira4j.network.PacketBuf;
-import com.sekwah.mira4j.network.Packets;
+import com.sekwah.mira4j.network.Packets.RPCType;
 
 public class RepairSystem implements RPCMessage {
     private int systemId;
@@ -31,7 +31,7 @@ public class RepairSystem implements RPCMessage {
     }
     
     public int id() {
-        return Packets.RPCType.RepairSystem.getId();
+        return RPCType.RepairSystem.getId();
     }
     
     public int getSystemId() {

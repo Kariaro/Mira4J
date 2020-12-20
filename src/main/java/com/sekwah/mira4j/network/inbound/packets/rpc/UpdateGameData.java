@@ -3,8 +3,10 @@ package com.sekwah.mira4j.network.inbound.packets.rpc;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sekwah.mira4j.config.PlayerInfo;
+import com.sekwah.mira4j.config.TaskInfo;
 import com.sekwah.mira4j.network.PacketBuf;
-import com.sekwah.mira4j.network.Packets;
+import com.sekwah.mira4j.network.Packets.RPCType;
 
 public class UpdateGameData implements RPCMessage {
     private List<PlayerInfo> list;
@@ -82,7 +84,7 @@ public class UpdateGameData implements RPCMessage {
     }
     
     public int id() {
-        return Packets.RPCType.UpdateGameData.getId();
+        return RPCType.UpdateGameData.getId();
     }
     
     public List<PlayerInfo> getPlayer() {
@@ -92,35 +94,5 @@ public class UpdateGameData implements RPCMessage {
     @Override
     public String toString() {
         return String.format("UpdateGameData[ list=%s ]", list);
-    }
-    
-    public static class PlayerInfo {
-        public String name;
-        public int playerId;
-        public int colorId;
-        public int hatId;
-        public int petId;
-        public int skinId;
-        public int flags;
-        public TaskInfo[] tasks = new TaskInfo[0];
-        
-        public PlayerInfo() {
-            
-        }
-        
-        public PlayerInfo(int playerId, String name, int colorId, int hatId, int petId, int skinId, int flags) {
-            this.playerId = playerId;
-            this.name = name;
-            this.colorId = colorId;
-            this.hatId = hatId;
-            this.petId = petId;
-            this.skinId = skinId;
-            this.flags = flags;
-        }
-    }
-    
-    public static class TaskInfo {
-        public int taskId;
-        public boolean isCompleted;
     }
 }

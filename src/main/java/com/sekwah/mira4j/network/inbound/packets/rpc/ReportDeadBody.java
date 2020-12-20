@@ -1,7 +1,7 @@
 package com.sekwah.mira4j.network.inbound.packets.rpc;
 
 import com.sekwah.mira4j.network.PacketBuf;
-import com.sekwah.mira4j.network.Packets;
+import com.sekwah.mira4j.network.Packets.RPCType;
 
 public class ReportDeadBody implements RPCMessage {
     private int victimId;
@@ -23,7 +23,7 @@ public class ReportDeadBody implements RPCMessage {
     }
     
     public int id() {
-        return Packets.RPCType.ReportDeadBody.getId();
+        return RPCType.ReportDeadBody.getId();
     }
     
     public int getVictimId() {

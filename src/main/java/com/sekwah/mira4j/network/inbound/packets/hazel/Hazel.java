@@ -63,13 +63,15 @@ public class Hazel {
         
         int length = reader.readUnsignedShort();
         int typeId = reader.readUnsignedByte();
+        byte[] bytes = reader.readBytes(length); // Always read the correct amount of bytes
+        
         HazelMessage message = newInstance(typeId);
         if(message == null) return null;
         
-        byte[] bytes = reader.readBytes(length);
         PacketBuf buf = PacketBuf.wrap(bytes);
         message.read(buf);
         buf.release();
+        
         return message;
     }
     

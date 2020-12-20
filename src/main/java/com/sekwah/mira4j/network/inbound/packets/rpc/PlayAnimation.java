@@ -1,7 +1,7 @@
 package com.sekwah.mira4j.network.inbound.packets.rpc;
 
 import com.sekwah.mira4j.network.PacketBuf;
-import com.sekwah.mira4j.network.Packets;
+import com.sekwah.mira4j.network.Packets.RPCType;
 
 public class PlayAnimation implements RPCMessage {
     private byte taskId;
@@ -23,7 +23,7 @@ public class PlayAnimation implements RPCMessage {
     }
     
     public int id() {
-        return Packets.RPCType.PlayAnimation.getId();
+        return RPCType.PlayAnimation.getId();
     }
     
     public byte getTaskId() {

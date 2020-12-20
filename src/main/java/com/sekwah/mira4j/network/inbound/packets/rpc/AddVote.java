@@ -1,7 +1,7 @@
 package com.sekwah.mira4j.network.inbound.packets.rpc;
 
 import com.sekwah.mira4j.network.PacketBuf;
-import com.sekwah.mira4j.network.Packets;
+import com.sekwah.mira4j.network.Packets.RPCType;
 
 public class AddVote implements RPCMessage {
     private int votingClientId;
@@ -27,7 +27,7 @@ public class AddVote implements RPCMessage {
     }
     
     public int id() {
-        return Packets.RPCType.AddVote.getId();
+        return RPCType.AddVote.getId();
     }
     
     public int getVotingClientId() {

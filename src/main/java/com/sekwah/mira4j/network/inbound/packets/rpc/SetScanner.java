@@ -1,7 +1,7 @@
 package com.sekwah.mira4j.network.inbound.packets.rpc;
 
 import com.sekwah.mira4j.network.PacketBuf;
-import com.sekwah.mira4j.network.Packets;
+import com.sekwah.mira4j.network.Packets.RPCType;
 
 public class SetScanner implements RPCMessage {
     private boolean isScanning;
@@ -27,7 +27,7 @@ public class SetScanner implements RPCMessage {
     }
     
     public int id() {
-        return Packets.RPCType.SetScanner.getId();
+        return RPCType.SetScanner.getId();
     }
     
     public boolean isScanning() {
