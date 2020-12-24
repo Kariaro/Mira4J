@@ -1,16 +1,21 @@
 package com.sekwah.mira4j.network;
 
+import java.util.Arrays;
+
 import com.sekwah.mira4j.Mira4J;
-import com.sekwah.mira4j.config.PlayerInfo;
-import com.sekwah.mira4j.config.Vector2;
+import com.sekwah.mira4j.config.*;
 import com.sekwah.mira4j.game.GameLobby;
 import com.sekwah.mira4j.game.GameManager;
 import com.sekwah.mira4j.game.Player;
 import com.sekwah.mira4j.network.Packets.HazelType;
-import com.sekwah.mira4j.network.inbound.packets.*;
-import com.sekwah.mira4j.network.inbound.packets.gamedata.GameDataMessage;
-import com.sekwah.mira4j.network.inbound.packets.hazel.*;
-import com.sekwah.mira4j.network.inbound.packets.rpc.*;
+import com.sekwah.mira4j.network.packets.*;
+import com.sekwah.mira4j.network.packets.gamedata.GameDataMessage;
+import com.sekwah.mira4j.network.packets.gamedata.SpawnData;
+import com.sekwah.mira4j.network.packets.hazel.*;
+import com.sekwah.mira4j.network.packets.net.CustomNetworkTransform;
+import com.sekwah.mira4j.network.packets.net.PlayerControl;
+import com.sekwah.mira4j.network.packets.net.PlayerPhysics;
+import com.sekwah.mira4j.network.packets.rpc.*;
 import com.sekwah.mira4j.utils.GameUtils;
 import com.sekwah.mira4j.utils.TestUtil;
 
@@ -48,12 +53,12 @@ public class ClientListener implements PacketListener {
     public void onReliablePacket(ReliablePacket packet) {
         Mira4J.LOGGER.info("A 'Reliable' packet '{}' '{}'", packet.getNonce(), packet.getMessages());
         
+        AcknowledgePacket ack_packet = new AcknowledgePacket(packet.getNonce(), -1);
+        manager.sendPacket(ack_packet);
+        
         for (HazelMessage msg : packet.getMessages()) {
             msg.forwardPacket(this);
         }
-        
-        AcknowledgePacket ack_packet = new AcknowledgePacket(packet.getNonce(), -1);
-        manager.sendPacket(ack_packet);
     }
     
     public void onNormalPacket(NormalPacket packet) {
@@ -62,6 +67,8 @@ public class ClientListener implements PacketListener {
         for (HazelMessage msg : packet.getMessages()) {
             msg.forwardPacket(this);
         }
+        
+        System.out.println("Lobby: " + lobby.scene);
     }
     
     public void onAcknowledgePacket(AcknowledgePacket packet) {
@@ -78,12 +85,10 @@ public class ClientListener implements PacketListener {
     public void onHostGame(HostGame packet) {
         Mira4J.LOGGER.info("A 'HostGame' packet data='{}'", packet.getGameOptionsData());
         
-        // lobby = gameManager.createNewLobby();
         lobby = gameManager.createLobby("SEKWAH");
         lobby.setSettings(packet.getGameOptionsData());
         lobby.setHost(player);
         
-        // //GameCodes.codeToInt("SEKWAH")));
         ReliablePacket send = new ReliablePacket(reliable_idx++, new HostGame(lobby));
         manager.sendPacket(send);
     }
@@ -101,6 +106,14 @@ public class ClientListener implements PacketListener {
                     onChat((SendChat)message);
                 }
             }
+            
+            if (msg instanceof SpawnData) {
+                SpawnData message = ((SpawnData)msg);
+                
+                // Is -2 host ?
+                Mira4J.LOGGER.info("Spawning");
+                Mira4J.LOGGER.info("    : {}", message.getOwnerClientId());
+            }
         }
     }
     
@@ -110,15 +123,26 @@ public class ClientListener implements PacketListener {
         String cmd = chat.getMessage();
         
         if (cmd.equals("/test")) {
-            RPC rcp = new RPC(ghost.getClientId(), new SendChat("[7fff00ff]Hello World[]"));
-            GameData testing = new GameData(gameId, rcp);
-            
-            ReliablePacket send = new ReliablePacket(reliable_idx++, testing);
-            manager.sendPacket(send);
+            for (int i = 0; i < 10; i++) {
+                RPC rcp = new RPC(i /*ghost.getClientId()*/, new SendChat("Hello World"));
+                GameData testing = new GameData(gameId, rcp);
+                
+                ReliablePacket send = new ReliablePacket(reliable_idx++, testing);
+                manager.sendPacket(send);
+            }
         }
         
         if (cmd.equals("/spawn")) {
-            setupTest();
+            Player player = gameManager.newPlayer();
+            for (int i = 0; i < 1; i++) {
+                setupTest(player);
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
         }
         
         if (cmd.startsWith("/name ")) {
@@ -183,26 +207,37 @@ public class ClientListener implements PacketListener {
     }
     
     
-    public void setupTest() {
+    public void setupTest(Player player) {
         int gameId = lobby.getGameId();
-        int ghostId = ghost.getClientId();
+        int ghostId = player.getClientId();
         
-        ReliablePacket send1 = new ReliablePacket(reliable_idx++, new JoinGame(gameId, ghostId, player.getClientId()));
+        ReliablePacket send1 = new ReliablePacket(reliable_idx++, new JoinGame(gameId, ghostId, this.player.getClientId()));
         manager.sendPacket(send1);
         
-        PlayerInfo info = new PlayerInfo(2, "Terminator", 11, 1, 18, 5, 0);
-        
         GameData[] array = {
-            new GameData(lobby, new RPC(ghostId, new SetName("Hugo"))),
-            new GameData(lobby, new RPC(ghostId, new UpdateGameData(info))),
-//            new GameData(lobby, new RPC(ghostId, new SnapTo(new Vector2(0, 0), 39)))
+            new GameData(lobby, new RPC(7, new SetName("Hugo"))),
+            new GameData(lobby, new RPC(7, new SetColor(2))),
+            new GameData(lobby, new RPC(7, new SetPet(1))),
+            new GameData(lobby, new RPC(7, new SetHat(18))),
+            new GameData(lobby, new RPC(7, new SetSkin(5)))
+            // , new GameData(lobby, new RPC(2, new UpdateGameData(new PlayerInfo(2, "Hugo", 11, 1, 18, 5, 0)))),
         };
         
         for (GameData data : array) {
-            ReliablePacket pck = new ReliablePacket(reliable_idx++, data);
-            manager.sendPacket(pck);
+            ReliablePacket pck2 = new ReliablePacket(reliable_idx++, data);
+            manager.sendPacket(pck2);
         }
         
+        GameData data = new GameData(lobby, new SpawnData(
+            SpawnType.PLAYER_CONTROL,
+            ghostId,
+            SpawnFlag.IS_CLIENT_CHARACTER,
+            new PlayerControl(100, player.getClientId(), true),
+            new PlayerPhysics(101),
+            new CustomNetworkTransform(102)
+        ));
+        
+        {
         HazelMessage testMessage = new HazelMessage() {
             public void forwardPacket(ClientListener listener) {}
             public void read(PacketBuf reader) {}
@@ -217,14 +252,14 @@ public class ClientListener implements PacketListener {
                 {
                     buf.writeUnsignedPackedInt(0x04);    // PlayerController PrefabId
                     buf.writeUnsignedPackedInt(ghostId); // OwnerId
-                    buf.writeByte(1); // SpawnFlags
-                    buf.writeUnsignedPackedInt(1); // 1 Component
+                    buf.writeByte(SpawnFlag.IS_CLIENT_CHARACTER); // SpawnFlags
+                    buf.writeUnsignedPackedInt(3); // 3 Components
                     
                     // PlayerInfo
                     buf.writeUnsignedPackedInt(ghostId); // NetId
                     PacketBuf info = PacketBuf.create(4096); {
                         info.writeByte(0); // IsNew
-                        info.writeByte(1); // PlayerId
+                        info.writeByte(ghostId); // PlayerId
                         
                         info.writeUnsignedPackedInt(0);
                         info.writeShort(0);
@@ -235,7 +270,7 @@ public class ClientListener implements PacketListener {
                         
                         info.writeShort(1); // SequenceId
                         info.writeVector2(new Vector2(0, 0)); // TargetPos
-                        info.writeVector2(new Vector2(0, 0)); // Velocity
+                        info.writeVector2(new Vector2(0.5f, 20)); // Velocity
                     }
                     byte[] bytes = info.readBytes(info.readableBytes());
                     info.release();
@@ -256,8 +291,21 @@ public class ClientListener implements PacketListener {
                 return HazelType.GameData.getId();
             }
         };
-        
-        ReliablePacket pck = new ReliablePacket(reliable_idx++, testMessage);
+            
+            PacketBuf bufA = PacketBuf.create(65536);
+            testMessage.write(bufA);
+            
+            PacketBuf bufB = PacketBuf.create(65536);            data.write(bufB);
+            
+            byte[] arrayA = bufA.readBytes(bufA.readableBytes());
+            byte[] arrayB = bufB.readBytes(bufB.readableBytes());
+            bufA.release();
+            bufB.release();
+            
+            System.out.println("A: " + Arrays.toString(arrayA));
+            System.out.println("B: " + Arrays.toString(arrayB));
+        }
+        ReliablePacket pck = new ReliablePacket(reliable_idx++, data);
         manager.sendPacket(pck);
     }
 }

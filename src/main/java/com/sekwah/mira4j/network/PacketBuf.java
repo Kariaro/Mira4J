@@ -1,16 +1,18 @@
 package com.sekwah.mira4j.network;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+import java.util.LinkedList;
 
 import com.sekwah.mira4j.config.Vector2;
 import com.sekwah.mira4j.game.GameOptionsData;
 import com.sekwah.mira4j.network.Packets.Maps;
+import com.sekwah.mira4j.utils.NonNull;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 public class PacketBuf {
+    private LinkedList<ByteBuf> messages = new LinkedList<>();
     private ByteBuf buffer;
     private PacketBuf(ByteBuf buffer) {
         this.buffer = buffer;
@@ -87,8 +89,9 @@ public class PacketBuf {
     /**
      * The packet buf returned from this method must call {@link #release()}
      */
+    @NonNull
     public PacketBuf readMessage() {
-        if(readableBytes() < 3) return null; // No header
+        if(readableBytes() < 3) return PacketBuf.wrap(new byte[0]); // No header
         int length = readUnsignedShort();
         @SuppressWarnings("unused")
         int typeId = readUnsignedByte(); // Unused!?
@@ -248,6 +251,8 @@ public class PacketBuf {
     }
     
     public void writeVector2(Vector2 vector) {
+        if(vector == null) vector = Vector2.ZERO;
+        
         int x = (int)(((vector.x + 40.0f) / 80.0f) * 65535);
         int y = (int)(((vector.y + 40.0f) / 80.0f) * 65535);
         
@@ -347,5 +352,20 @@ public class PacketBuf {
      */
     public static PacketBuf create(int size) {
         return new PacketBuf(Unpooled.buffer(size));
+    }
+
+    public void startMessage(int id) {
+        messages.add(buffer);
+        buffer = Unpooled.buffer(65536);
+        buffer.writeByte(id);
+    }
+    
+    public void endMessage() {
+        byte[] bytes = readBytes(buffer.readableBytes());
+        buffer.release(); // Release the buffer
+        
+        buffer = messages.pollLast();
+        writeShort(bytes.length - 1); // length - 1 for Id
+        writeBytes(bytes);
     }
 }

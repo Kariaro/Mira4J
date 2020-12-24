@@ -68,4 +68,8 @@ public class GameUtils {
         
         return new String(chars);
     }
+    
+    public static int generateValidGameInt(int index) {
+        return getIntFromGameString(generateGameString(index));
+    }
 }

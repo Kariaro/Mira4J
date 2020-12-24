@@ -1,6 +1,9 @@
 package com.sekwah.mira4j.config;
 
 public class Vector2 {
+    // TODO: Make this immutable
+    public static final Vector2 ZERO = new Vector2(0, 0);
+    
     public float x;
     public float y;
     

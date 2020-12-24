@@ -3,6 +3,8 @@ package com.sekwah.mira4j.game;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.sekwah.mira4j.impl.unity.SceneDB;
+import com.sekwah.mira4j.unity.Scene;
 import com.sekwah.mira4j.utils.GameUtils;
 
 public class GameManager {
@@ -11,16 +13,25 @@ public class GameManager {
     private Map<Integer, GameLobby> lobbies = new HashMap<>();
     private Map<Integer, Player> players = new HashMap<>();
     
+    
+    private List<Scene> scenes = new ArrayList<>();
+    
     public GameManager() {
         
+    }
+    
+    public Scene createNewLobby2() {
+        int id = lobby_id.getAndIncrement();
+        SceneDB scene = new SceneDB(this, id);
+        scenes.add(scene);
+        return scene;
     }
     
     public GameLobby createNewLobby() {
         int id = lobby_id.getAndIncrement();
         
-        String gameCode = GameUtils.generateGameString(id);
-        int gameId = GameUtils.getIntFromGameString(gameCode);
-        GameLobby lobby = new GameLobby(gameId);
+        int gameId = GameUtils.generateValidGameInt(id);
+        GameLobby lobby = new GameLobby(gameId, createNewLobby2());
         lobbies.put(gameId, lobby);
         
         return lobby;
@@ -28,7 +39,7 @@ public class GameManager {
     
     public GameLobby createLobby(String value) {
         int gameId = GameUtils.getIntFromGameString(value);
-        GameLobby lobby = new GameLobby(gameId);
+        GameLobby lobby = new GameLobby(gameId, new SceneDB(this, gameId));
         lobbies.put(gameId, lobby);
         return lobby;
     }

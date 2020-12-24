@@ -4,16 +4,20 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.sekwah.mira4j.unity.Scene;
+
 public class GameLobby {
     private List<Player> players;
     private GameOptionsData data;
     private int gameId;
     private Player host;
+    public Scene scene;
     
-    public GameLobby(int gameId) {
+    public GameLobby(int gameId, Scene scene) {
         this.gameId = gameId;
         players = new ArrayList<>();
         data = new GameOptionsData();
+        this.scene = scene;
     }
     
     public Player getPlayerById(int id) {

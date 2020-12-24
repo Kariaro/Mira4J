@@ -29,7 +29,7 @@ public class IncomingPacketHandler extends SimpleChannelInboundHandler<DatagramP
         buf.resetReaderIndex();
         
         PacketType type = Packets.PacketType.fromId(packetBuffer[0]);
-        if(type != PacketType.PING) {
+        if (type != PacketType.PING) {
             Mira4J.LOGGER.info("Recieved Packet {} {}", type.toString(), Arrays.toString(packetBuffer));
         }
         
@@ -41,7 +41,11 @@ public class IncomingPacketHandler extends SimpleChannelInboundHandler<DatagramP
         
         Packet<?> packet = Packets.getPacketFromType(packetType);
         if (packet == null) return;
-        packet.readData(PacketBuf.wrap(buf));
+        try {
+            packet.readData(PacketBuf.wrap(buf));
+        } catch (Exception e) { // FIXME: REMOVE
+            e.printStackTrace();
+        }
         
         ctx.fireChannelRead(packet);
     }

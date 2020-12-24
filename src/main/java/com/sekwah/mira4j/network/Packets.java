@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.sekwah.mira4j.Mira4J;
-import com.sekwah.mira4j.network.inbound.packets.*;
+import com.sekwah.mira4j.network.packets.*;
 
 public class Packets {
     private static final Map<PacketType, Class<? extends Packet<?>>> packets;
