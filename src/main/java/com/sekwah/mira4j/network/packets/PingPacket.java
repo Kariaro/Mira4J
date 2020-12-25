@@ -1,10 +1,10 @@
 package com.sekwah.mira4j.network.packets;
 
-import com.sekwah.mira4j.network.ClientListener;
 import com.sekwah.mira4j.network.Packet;
 import com.sekwah.mira4j.network.PacketBuf;
+import com.sekwah.mira4j.network.decoder.ClientInListener;
 
-public class PingPacket implements Packet<ClientListener> {
+public class PingPacket implements Packet<ClientInListener> {
     private int nonce;
     
     public PingPacket() {
@@ -26,7 +26,7 @@ public class PingPacket implements Packet<ClientListener> {
     }
 
     @Override
-    public void forwardPacket(ClientListener listener) {
+    public void forwardPacket(ClientInListener listener) {
         listener.onKeepAlivePacket(this);
     }
     

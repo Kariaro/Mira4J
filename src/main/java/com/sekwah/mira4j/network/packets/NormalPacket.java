@@ -3,13 +3,13 @@ package com.sekwah.mira4j.network.packets;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sekwah.mira4j.network.ClientListener;
 import com.sekwah.mira4j.network.Packet;
 import com.sekwah.mira4j.network.PacketBuf;
+import com.sekwah.mira4j.network.decoder.ClientInListener;
 import com.sekwah.mira4j.network.packets.hazel.Hazel;
 import com.sekwah.mira4j.network.packets.hazel.HazelMessage;
 
-public class NormalPacket implements Packet<ClientListener> {
+public class NormalPacket implements Packet<ClientInListener> {
     private List<HazelMessage> messages;
     
     public NormalPacket() {
@@ -39,7 +39,7 @@ public class NormalPacket implements Packet<ClientListener> {
     }
 
     @Override
-    public void forwardPacket(ClientListener listener) {
+    public void forwardPacket(ClientInListener listener) {
         listener.onNormalPacket(this);
     }
     

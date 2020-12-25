@@ -1,7 +1,10 @@
 package com.sekwah.mira4j.network.packets.rpc;
 
+import java.util.Objects;
+
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.RPCType;
+import com.sekwah.mira4j.utils.NonNull;
 
 public class SendChat implements RPCMessage {
     private String message;
@@ -10,7 +13,7 @@ public class SendChat implements RPCMessage {
         
     }
     
-    public SendChat(String message) {
+    private SendChat(String message) {
         this.message = message;
     }
     
@@ -33,5 +36,9 @@ public class SendChat implements RPCMessage {
     @Override
     public String toString() {
         return String.format("SendChat[ message=\"%s\" ]", message);
+    }
+    
+    public static SendChat of(@NonNull String message) {
+        return new SendChat(Objects.requireNonNull(message));
     }
 }

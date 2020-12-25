@@ -1,7 +1,5 @@
-package com.sekwah.mira4j.unity;
+package com.sekwah.mira4j.api;
 
-import com.sekwah.mira4j.api.Player;
-import com.sekwah.mira4j.game.GameManager;
 import com.sekwah.mira4j.network.packets.net.Component;
 import com.sekwah.mira4j.utils.NonNull;
 import com.sekwah.mira4j.utils.Nullable;
@@ -19,24 +17,16 @@ public interface Scene {
     // scene that it belongs to.
     
     /**
-     * Returns a reference to the global game manager.
-     * @return a reference to the global game manager
-     */
-    @NonNull
-    GameManager getGlobalManager();
-    
-    /**
      * Returns the game id for this scene.
      * @return the game id for this scene
      */
     int getGameId();
     
     /**
-     * Returns all the players inside this scene.
-     * @return all the players inside this scene
+     * Returns an array with all the players inside this scene.
+     * @return an array with all the players inside this scene
      */
-    @NonNull
-    Player[] getPlayers();
+    @NonNull Player[] getPlayers();
     
     /**
      * Returns the amount of players inside this scene.
@@ -46,29 +36,29 @@ public interface Scene {
     
     /**
      * Add a player to this scene.
+     * @param player the player to add
      */
     void addPlayer(@NonNull Player player);
     
     /**
      * Remove a player from this scene.
+     * @param player the player to remove
      */
     void removePlayer(@NonNull Player player);
     
     /**
      * Returns the player with the specified client id inside this scene.
-     * @param id the client id of the player
-     * @return the player with the specified client id
+     * @param clientId the client id of the player
+     * @return the player with the specified client id or <code>null</code>
      */
-    @Nullable
-    Player getPlayer(int clientId);
+    @Nullable Player getPlayer(int clientId);
     
     /**
      * Returns the component with the specified <code>netId</code> in this scene.
      * @param netId the id of the component
      * @return the component with the specified <code>netId</code> or <code>null</code>
      */
-    @Nullable
-    Component getComponent(int netId);
+    @Nullable Component getComponent(int netId);
     
     /**
      * Returns the component with the specified <code>netId</code> in this scene.
@@ -77,13 +67,10 @@ public interface Scene {
      * @param netId the id of the component
      * @return the component with the specified <code>netId</code> or <code>null</code>
      */
-    @Nullable
-    <T extends Component> T getComponent(Class<T> type, int netId);
+    @Nullable <T extends Component> T getComponent(Class<T> type, int netId);
     
     /**
      * Tick all the scene objects in the world ?!
-     *
      */
-    @Deprecated
-    void tick();
+    @Deprecated void tick();
 }

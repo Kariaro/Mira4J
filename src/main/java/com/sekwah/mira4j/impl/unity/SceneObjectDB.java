@@ -1,8 +1,8 @@
 package com.sekwah.mira4j.impl.unity;
 
+import com.sekwah.mira4j.api.Scene;
+import com.sekwah.mira4j.api.SceneObject;
 import com.sekwah.mira4j.network.PacketBuf;
-import com.sekwah.mira4j.unity.Scene;
-import com.sekwah.mira4j.unity.SceneObject;
 
 public abstract class SceneObjectDB implements SceneObject {
     protected final Scene scene;

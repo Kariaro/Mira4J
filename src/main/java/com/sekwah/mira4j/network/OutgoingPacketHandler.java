@@ -22,13 +22,17 @@ public class OutgoingPacketHandler extends ChannelOutboundHandlerAdapter {
         ctx.write(buf, promise);
         
         
-        buf.markReaderIndex();
-        final int readableBytes = buf.readableBytes();
-        final byte[] packetBuffer = new byte[readableBytes];
-        buf.readBytes(packetBuffer);
-        buf.resetReaderIndex();
         
-        Mira4J.LOGGER.info("Sending packet {} {}", type, Arrays.toString(packetBuffer));
-        System.out.println(packet);
+        if (type != PacketType.PING
+         && type != PacketType.ACKNOWLEDGEMENT) {
+            buf.markReaderIndex();
+            final int readableBytes = buf.readableBytes();
+            final byte[] packetBuffer = new byte[readableBytes];
+            buf.readBytes(packetBuffer);
+            buf.resetReaderIndex();
+            
+            Mira4J.LOGGER.info("Sending packet {} {}", type, Arrays.toString(packetBuffer));
+            System.out.println(packet);
+        }
     }
 }

@@ -29,7 +29,7 @@ public class Hazel {
         m.put(HazelType.AlterGame, AlterGame.class);
         m.put(HazelType.KickPlayer, KickPlayer.class);
         m.put(HazelType.WaitForHost, WaitForHost.class);
-        // Redirect
+        m.put(HazelType.Redirect, Redirect.class);
         // ReselectServer
         // GetGameListV2
     }

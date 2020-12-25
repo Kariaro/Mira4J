@@ -1,9 +1,9 @@
 package com.sekwah.mira4j.network.packets.hazel;
 
 import com.sekwah.mira4j.config.DisconnectReason;
-import com.sekwah.mira4j.network.ClientListener;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.HazelType;
+import com.sekwah.mira4j.network.decoder.ClientInListener;
 
 public class JoinGame implements HazelMessage {
     private int gameId;
@@ -49,7 +49,7 @@ public class JoinGame implements HazelMessage {
     }
     
     @Override
-    public void forwardPacket(ClientListener listener) {
+    public void forwardPacket(ClientInListener listener) {
         listener.onJoinGame(this);
     }
     

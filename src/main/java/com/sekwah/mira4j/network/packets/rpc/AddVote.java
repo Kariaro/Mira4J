@@ -1,7 +1,9 @@
 package com.sekwah.mira4j.network.packets.rpc;
 
+import com.sekwah.mira4j.api.Player;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.RPCType;
+import com.sekwah.mira4j.utils.NonNull;
 
 public class AddVote implements RPCMessage {
     private int votingClientId;
@@ -41,5 +43,9 @@ public class AddVote implements RPCMessage {
     @Override
     public String toString() {
         return String.format("AddVote[ votingClientId=%s, targetClientId=%d ]", votingClientId, targetClientId);
+    }
+    
+    public static AddVote of(@NonNull Player voter, @NonNull Player target) {
+        return new AddVote(voter.getClientId(), target.getClientId());
     }
 }

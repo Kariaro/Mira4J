@@ -2,11 +2,11 @@ package com.sekwah.mira4j.network.packets.gamedata;
 
 import java.util.*;
 
+import com.sekwah.mira4j.api.Scene;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.GameDataType;
 import com.sekwah.mira4j.network.packets.net.Component;
 import com.sekwah.mira4j.network.packets.net.InnerNet;
-import com.sekwah.mira4j.unity.Scene;
 
 public class Data implements GameDataMessage {
     private final Scene scene;

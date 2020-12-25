@@ -14,7 +14,6 @@ import com.sekwah.mira4j.network.Server;
 public class Mira4J {
 
     private final DataStorage dataStorage;
-    private final GameManager gameManager;
     private final Server server;
 
     private final String SERVER_SETTINGS_LOC = "serversettings.json";
@@ -27,9 +26,11 @@ public class Mira4J {
         ServerConfig serverConfig = dataStorage.loadJson(ServerConfig.class, SERVER_SETTINGS_LOC);
 
         dataStorage.storeJson(serverConfig, SERVER_SETTINGS_LOC);
-        gameManager = GameManager.INSTANCE;
         
-        server = new Server(gameManager, serverConfig);
+        // Initialize the game manager
+        GameManager.init();
+        
+        server = new Server(serverConfig);
         
         try {
             server.start();

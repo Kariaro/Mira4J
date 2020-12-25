@@ -1,9 +1,9 @@
 package com.sekwah.mira4j.network.packets.gamedata;
 
+import com.sekwah.mira4j.api.Scene;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.GameDataType;
 import com.sekwah.mira4j.network.packets.rpc.RPC;
-import com.sekwah.mira4j.unity.Scene;
 
 public class GameDataDecoder {
     public static GameDataMessage decode(Scene scene, PacketBuf reader, boolean isSpawning) {

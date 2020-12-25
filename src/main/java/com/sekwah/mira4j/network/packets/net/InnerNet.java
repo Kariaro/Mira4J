@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.sekwah.mira4j.Mira4J;
+import com.sekwah.mira4j.api.Scene;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.NetType;
-import com.sekwah.mira4j.unity.Scene;
 
 public class InnerNet {
     private static final Map<NetType, Class<? extends Component>> map;

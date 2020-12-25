@@ -3,7 +3,7 @@ package com.sekwah.mira4j.game;
 import java.util.Objects;
 
 import com.sekwah.mira4j.api.Player;
-import com.sekwah.mira4j.unity.Scene;
+import com.sekwah.mira4j.api.Scene;
 import com.sekwah.mira4j.utils.NonNull;
 import com.sekwah.mira4j.utils.Nullable;
 
@@ -12,7 +12,7 @@ public class GameLobby {
     private final long creationTime;
     
     private GameOptionsData data;
-    private Player host;
+    private int hostId;
     
     public GameLobby(@NonNull Scene scene) {
         this.data = new GameOptionsData();
@@ -51,11 +51,11 @@ public class GameLobby {
     }
     
     public void setHost(Player player) {
-        this.host = player;
+        this.hostId = player.getClientId();
     }
     
     public Player getHost() {
-        return host;
+        return scene.getPlayer(hostId);
     }
     
     public int getNumPlayers() {
@@ -69,5 +69,9 @@ public class GameLobby {
     @NonNull
     public Scene getScene() {
         return scene;
+    }
+
+    public void disconnect() {
+        
     }
 }

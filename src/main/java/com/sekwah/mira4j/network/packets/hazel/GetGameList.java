@@ -1,8 +1,8 @@
 package com.sekwah.mira4j.network.packets.hazel;
 
-import com.sekwah.mira4j.network.ClientListener;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.HazelType;
+import com.sekwah.mira4j.network.decoder.ClientInListener;
 
 /**
  * @deprecated Legacy message
@@ -20,5 +20,5 @@ public class GetGameList implements HazelMessage {
     }
     
     @Override
-    public void forwardPacket(ClientListener listener) {}
+    public void forwardPacket(ClientInListener listener) {}
 }

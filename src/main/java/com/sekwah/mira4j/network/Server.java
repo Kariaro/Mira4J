@@ -5,10 +5,11 @@ import static com.sekwah.mira4j.Mira4J.*;
 import java.util.*;
 
 import com.sekwah.mira4j.config.ServerConfig;
-import com.sekwah.mira4j.game.GameManager;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
@@ -18,8 +19,6 @@ public class Server implements Runnable {
     private final int port;
     private final String address;
     
-    private final GameManager gameManager;
-
     private final List<ClientConnectionManager> managers = Collections.synchronizedList(new ArrayList<ClientConnectionManager>());
     private final Thread tickThread = new Thread(this);
     
@@ -27,10 +26,8 @@ public class Server implements Runnable {
         return instance;
     }
 
-    public Server(GameManager gameManager, ServerConfig serverConfig) {
+    public Server(ServerConfig serverConfig) {
         instance = this;
-        
-        this.gameManager = gameManager;
         this.address = serverConfig.address;
         this.port = serverConfig.port;
     }
@@ -56,7 +53,7 @@ public class Server implements Runnable {
                             );
                             
                             managers.add(manager);
-                            manager.setPacketListener(new ClientListener(gameManager, manager));
+                            manager.setPacketListener(new ClientListener(manager));
                             p.addLast(manager);
                         }
                     });

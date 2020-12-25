@@ -3,27 +3,22 @@ package com.sekwah.mira4j.impl.unity;
 import java.util.*;
 
 import com.sekwah.mira4j.api.Player;
+import com.sekwah.mira4j.api.Scene;
+import com.sekwah.mira4j.api.SceneObject;
 import com.sekwah.mira4j.game.GameManager;
 import com.sekwah.mira4j.network.packets.net.Component;
-import com.sekwah.mira4j.unity.Scene;
-import com.sekwah.mira4j.unity.SceneObject;
 import com.sekwah.mira4j.utils.GameUtils;
 
 public class SceneDB implements Scene {
-    private final GameManager manager;
+    @SuppressWarnings("unused")
+    private final GameManager manager = GameManager.INSTANCE;
     private final int gameId;
-    // Concurent hash map!?
+    
     private final Map<Integer, SceneObject> objects = new HashMap<>();
-    private final List<Player> players = new ArrayList<>();
+    private final Map<Integer, Player> players = new HashMap<>();
     
-    public SceneDB(GameManager manager, int gameId) {
-        this.manager = manager;
+    public SceneDB(int gameId) {
         this.gameId = gameId;
-    }
-    
-    @Override
-    public GameManager getGlobalManager() {
-        return manager;
     }
     
     @Override
@@ -33,7 +28,7 @@ public class SceneDB implements Scene {
 
     @Override
     public Component getComponent(int netId) {
-        Iterator<Player> iter = players.iterator();
+        Iterator<Player> iter = players.values().iterator();
         while (iter.hasNext()) {
             Component comp = ((PlayerDB)iter.next()).getComponent(netId);
             if(comp != null) return comp;
@@ -56,18 +51,12 @@ public class SceneDB implements Scene {
 
     @Override
     public Player getPlayer(int clientId) {
-        Iterator<Player> iter = players.iterator();
-        while (iter.hasNext()) {
-            Player player = iter.next();
-            if (player.getClientId() == clientId) return player;
-        }
-        
-        return null;
+        return players.get(clientId);
     }
     
     @Override
     public Player[] getPlayers() {
-        return players.toArray(new Player[0]);
+        return players.values().toArray(new Player[0]);
     }
     
     @Override
@@ -77,12 +66,12 @@ public class SceneDB implements Scene {
     
     @Override
     public void addPlayer(Player player) {
-        players.add(player);
+        players.put(player.getClientId(), player);
     }
     
     @Override
     public void removePlayer(Player player) {
-        players.remove(player);
+        players.remove(player.getClientId());
     }
     
     @Override

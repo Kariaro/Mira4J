@@ -1,21 +1,54 @@
 package com.sekwah.mira4j.game;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.sekwah.mira4j.api.Player;
+import com.sekwah.mira4j.api.Scene;
 import com.sekwah.mira4j.impl.unity.PlayerDB;
 import com.sekwah.mira4j.impl.unity.SceneDB;
-import com.sekwah.mira4j.unity.Scene;
 import com.sekwah.mira4j.utils.GameUtils;
 import com.sekwah.mira4j.utils.Nullable;
 
 public class GameManager {
     public static final GameManager INSTANCE = new GameManager();
+    private static final Runnable LOBBY_COLLECTOR = () -> {
+        Map<Integer, GameLobby> lobbies = GameManager.INSTANCE.lobbies;
+        
+        while(true) {
+            try {
+                Thread.sleep(1000);
+            } catch(InterruptedException e) {
+                break;
+            }
+            
+            long now = System.currentTimeMillis();
+            Iterator<GameLobby> iter = lobbies.values().iterator();
+            while(iter.hasNext()) {
+                GameLobby lobby = iter.next();
+                
+                long ellapsed = now - lobby.getCreationTime();
+                
+                // 10 seconds
+                if(ellapsed > 10000) {
+                    lobby.disconnect();
+                    iter.remove();
+                }
+            }
+        }
+    };
+    
+    public static final void init() {
+        Thread collector = new Thread(LOBBY_COLLECTOR);
+        collector.setName("Mira4J Lobby Expiration GC");
+        collector.start();
+    }
     
     private static final AtomicInteger lobby_id_count = new AtomicInteger();
-    private static final AtomicInteger client_id_count = new AtomicInteger(232);
+    private static final AtomicInteger session_id_count = new AtomicInteger(2);
+    private static final AtomicInteger client_id_count = new AtomicInteger(2);
     
     // Garbage queue?
     private Map<Integer, GameLobby> lobbies = new HashMap<>();
@@ -25,9 +58,13 @@ public class GameManager {
         
     }
     
+    public static int newSessionId() {
+        return session_id_count.getAndIncrement();
+    }
+    
     public GameLobby createNewLobby() {
         int gameId = GameUtils.generateValidGameInt(lobby_id_count.getAndIncrement());
-        Scene scene = new SceneDB(this, gameId);
+        Scene scene = new SceneDB(gameId);
         
         GameLobby lobby = new GameLobby(scene);
         lobbies.put(gameId, lobby);
@@ -37,7 +74,7 @@ public class GameManager {
     
     public GameLobby createLobby(String value) {
         int gameId = GameUtils.getIntFromGameString(value);
-        GameLobby lobby = new GameLobby(new SceneDB(this, gameId));
+        GameLobby lobby = new GameLobby(new SceneDB(gameId));
         lobbies.put(gameId, lobby);
         return lobby;
     }
@@ -46,10 +83,10 @@ public class GameManager {
         return lobbies.get(gameId);
     }
 
-    public Player newPlayer() {
+    public static Player newPlayer() {
         int id = client_id_count.getAndIncrement();
         Player player = new PlayerDB(id);
-        clients.put(id, player);
+        INSTANCE.clients.put(id, player);
         return player;
     }
     

@@ -19,8 +19,13 @@ public class IncomingPacketHandler extends SimpleChannelInboundHandler<DatagramP
     
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) throws Exception {
+        if(!manager.hasRemote()) {
+            // Because the manager is not connected by
+            // default we need to set the remote address
+            manager.setRemote(msg.sender());
+        }
+        
         ByteBuf buf = msg.content();
-        manager.connect(msg.sender());
         
         buf.markReaderIndex();
         final int readableBytes = buf.readableBytes();
@@ -29,7 +34,8 @@ public class IncomingPacketHandler extends SimpleChannelInboundHandler<DatagramP
         buf.resetReaderIndex();
         
         PacketType type = Packets.PacketType.fromId(packetBuffer[0]);
-        if (type != PacketType.PING) {
+        if (type != PacketType.PING
+         && type != PacketType.ACKNOWLEDGEMENT) {
             Mira4J.LOGGER.info("Recieved Packet {} {}", type.toString(), Arrays.toString(packetBuffer));
         }
         
@@ -41,11 +47,7 @@ public class IncomingPacketHandler extends SimpleChannelInboundHandler<DatagramP
         
         Packet<?> packet = Packets.getPacketFromType(packetType);
         if (packet == null) return;
-        try {
-            packet.readData(PacketBuf.wrap(buf));
-        } catch (Exception e) { // FIXME: REMOVE
-            e.printStackTrace();
-        }
+        packet.readData(PacketBuf.wrap(buf));
         
         ctx.fireChannelRead(packet);
     }

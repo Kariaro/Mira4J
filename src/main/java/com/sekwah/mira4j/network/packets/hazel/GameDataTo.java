@@ -3,17 +3,17 @@ package com.sekwah.mira4j.network.packets.hazel;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sekwah.mira4j.network.ClientListener;
+import com.sekwah.mira4j.api.Scene;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.GameDataType;
 import com.sekwah.mira4j.network.Packets.HazelType;
+import com.sekwah.mira4j.network.decoder.ClientInListener;
 import com.sekwah.mira4j.network.packets.gamedata.GameDataDecoder;
 import com.sekwah.mira4j.network.packets.gamedata.GameDataMessage;
 import com.sekwah.mira4j.network.packets.gamedata.GameDataMessage.Despawn;
 import com.sekwah.mira4j.network.packets.gamedata.GameDataMessage.Ready;
 import com.sekwah.mira4j.network.packets.gamedata.GameDataMessage.SceneChange;
 import com.sekwah.mira4j.network.packets.rpc.RPC;
-import com.sekwah.mira4j.unity.Scene;
 
 public class GameDataTo implements HazelMessage {
     private int gameId;
@@ -107,7 +107,8 @@ public class GameDataTo implements HazelMessage {
     }
     
     @Override
-    public void forwardPacket(ClientListener listener) {
+    public void forwardPacket(ClientInListener listener) {
+        listener.onGameDataTo(this);
     }
     
     public int getGameId() {

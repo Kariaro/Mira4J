@@ -4,15 +4,22 @@ import java.net.InetSocketAddress;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import com.sekwah.mira4j.game.GameManager;
+
 import io.netty.channel.*;
 import io.netty.channel.socket.DatagramChannel;
 
+/**
+ * This class is connected to a client 
+ *
+ * @author HardCoded
+ */
 public class ClientConnectionManager extends SimpleChannelInboundHandler<Packet<?>> {
-    
     private final Queue<Packet<?>> packetQueue = new ConcurrentLinkedQueue<>();
-    public DatagramChannel channel;
+    private DatagramChannel channel;
     private PacketListener listener;
     private boolean hasRemote;
+    private int sessionId;
     
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -37,6 +44,10 @@ public class ClientConnectionManager extends SimpleChannelInboundHandler<Packet<
         } catch (ClassCastException e) {
             e.printStackTrace();
         }
+    }
+    
+    public int getSessionId() {
+        return sessionId;
     }
     
     public boolean hasClient() {
@@ -102,12 +113,20 @@ public class ClientConnectionManager extends SimpleChannelInboundHandler<Packet<
         channelfuture.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
     }
 
-    public void connect(InetSocketAddress addr) {
-        if (!hasRemote) {
-            hasRemote = true;
-            ChannelFuture channelfuture = this.channel.connect(addr);
-            channelfuture.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
+    protected boolean hasRemote() {
+        return hasRemote;
+    }
+    
+    protected void setRemote(InetSocketAddress addr) {
+        if (hasRemote) {
+            return;
         }
+        
+        hasRemote = true;
+        sessionId = GameManager.newSessionId();
+        
+        ChannelFuture channelfuture = channel.connect(addr);
+        channelfuture.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
     }
 
 }

@@ -2,9 +2,9 @@ package com.sekwah.mira4j.network.packets.hazel;
 
 import com.sekwah.mira4j.game.GameLobby;
 import com.sekwah.mira4j.game.GameOptionsData;
-import com.sekwah.mira4j.network.ClientListener;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.HazelType;
+import com.sekwah.mira4j.network.decoder.ClientInListener;
 
 public class HostGame implements HazelMessage {
     private GameOptionsData data;
@@ -38,7 +38,7 @@ public class HostGame implements HazelMessage {
     }
 
     @Override
-    public void forwardPacket(ClientListener listener) {
+    public void forwardPacket(ClientInListener listener) {
         listener.onHostGame(this);
     }
     

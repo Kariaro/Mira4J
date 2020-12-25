@@ -6,11 +6,13 @@ import java.util.Objects;
 
 import com.sekwah.mira4j.api.Player;
 import com.sekwah.mira4j.config.TaskInfo;
+import com.sekwah.mira4j.network.ClientConnectionManager;
 import com.sekwah.mira4j.network.packets.net.Component;
 import com.sekwah.mira4j.utils.Nullable;
 
 public class PlayerDB implements Player {
-    private int clientId;
+    private final int clientId;
+    public ClientConnectionManager manager;
     
     private String name = "";
     private boolean isDisconnected;
@@ -22,12 +24,9 @@ public class PlayerDB implements Player {
     private int petId;
     private int skinId;
     
-    // This is used ingame
     private TaskInfo[] tasks;
     
     private Map<Integer, Component> components = new HashMap<>();
-    
-    // If this player needs to update
     private boolean dirty;
     
     public PlayerDB(int clientId) {
@@ -39,25 +38,9 @@ public class PlayerDB implements Player {
         return name;
     }
     
-    public void addComponent(Component comp) {
-        if (comp == null) return;
-        components.put(comp.getNetId(), comp);
-    }
-    
-    @Nullable
-    public <T extends Component> T getComponent(Class<T> type) {
-        for (Component comp : components.values()) {
-            if (type.isInstance(comp)) {
-                return type.cast(comp);
-            }
-        }
-        
-        return null;
-    }
-    
-    @Nullable
-    public Component getComponent(int netId) {
-        return components.get(netId);
+    @Override
+    public int getClientId() {
+        return clientId;
     }
     
     @Override
@@ -161,9 +144,25 @@ public class PlayerDB implements Player {
         return hashCode() == obj.hashCode();
     }
     
-    @Override
-    public int getClientId() {
-        return clientId;
+    public void addComponent(Component comp) {
+        if (comp == null) return;
+        components.put(comp.getNetId(), comp);
+    }
+    
+    @Nullable
+    public <T extends Component> T getComponent(Class<T> type) {
+        for (Component comp : components.values()) {
+            if (type.isInstance(comp)) {
+                return type.cast(comp);
+            }
+        }
+        
+        return null;
+    }
+    
+    @Nullable
+    public Component getComponent(int netId) {
+        return components.get(netId);
     }
     
     @Override

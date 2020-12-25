@@ -1,10 +1,10 @@
 package com.sekwah.mira4j.network.packets;
 
-import com.sekwah.mira4j.network.ClientListener;
 import com.sekwah.mira4j.network.Packet;
 import com.sekwah.mira4j.network.PacketBuf;
+import com.sekwah.mira4j.network.decoder.ClientInListener;
 
-public class HelloPacket implements Packet<ClientListener> {
+public class HelloPacket implements Packet<ClientInListener> {
     private int nonce;
     private byte hazelVersion;
     private int version;
@@ -24,7 +24,7 @@ public class HelloPacket implements Packet<ClientListener> {
     }
 
     @Override
-    public void forwardPacket(ClientListener listener) {
+    public void forwardPacket(ClientInListener listener) {
         listener.onHelloPacket(this);
     }
 
