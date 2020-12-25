@@ -19,7 +19,7 @@ public class IncomingPacketHandler extends SimpleChannelInboundHandler<DatagramP
     
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) throws Exception {
-        if(!manager.hasRemote()) {
+        if (!manager.hasRemote()) {
             // Because the manager is not connected by
             // default we need to set the remote address
             manager.setRemote(msg.sender());

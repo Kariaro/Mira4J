@@ -17,26 +17,27 @@ public class GameDataDecoder {
             if (type == null) return null;
             switch(type) {
                 case Data: {
+                    if(scene == null) return null;
+                    
                     Data data = new Data(scene);
                     data.read(reader, isSpawning);
-                    msg = data;
-                    break;
+                    return data;
                 }
                 case RPC: {
+                    if(scene == null) return null;
+                    
                     RPC rpc = new RPC();
                     rpc.read(reader);
-                    msg = rpc;
-                    break;
+                    return rpc;
                 }
                 case Spawn: {
                     SpawnData data = new SpawnData();
                     data.read(reader, isSpawning);
-                    msg = data;
-                    break;
+                    return data;
                 }
-                case Despawn: msg = new GameDataMessage.Despawn(reader.readPackedInt()); break;
-                case SceneChange: msg = new GameDataMessage.SceneChange(reader.readPackedInt(), reader.readString()); break;
-                case Ready: msg = new GameDataMessage.Ready(reader.readPackedInt()); break;
+                case Despawn: return new GameDataMessage.Despawn(reader.readPackedInt());
+                case SceneChange: return new GameDataMessage.SceneChange(reader.readPackedInt(), reader.readString());
+                case Ready: return new GameDataMessage.Ready(reader.readPackedInt());
                 case ChangeSettings: // obsolete
                     break;
             }

@@ -4,7 +4,7 @@ import java.net.InetSocketAddress;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import com.sekwah.mira4j.game.GameManager;
+import com.sekwah.mira4j.impl.unity.GameManager;
 
 import io.netty.channel.*;
 import io.netty.channel.socket.DatagramChannel;
@@ -123,7 +123,7 @@ public class ClientConnectionManager extends SimpleChannelInboundHandler<Packet<
         }
         
         hasRemote = true;
-        sessionId = GameManager.newSessionId();
+        sessionId = GameManager.nextSessionId();
         
         ChannelFuture channelfuture = channel.connect(addr);
         channelfuture.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);

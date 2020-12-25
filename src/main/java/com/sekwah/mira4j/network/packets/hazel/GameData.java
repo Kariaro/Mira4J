@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sekwah.mira4j.api.Scene;
-import com.sekwah.mira4j.game.GameManager;
+import com.sekwah.mira4j.impl.unity.GameManager;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.GameDataType;
 import com.sekwah.mira4j.network.Packets.HazelType;
@@ -47,10 +47,9 @@ public class GameData implements HazelMessage {
     @Override
     public void read(PacketBuf reader) {
         gameId = reader.readInt();
-        scene = GameManager.INSTANCE.getScene(gameId);
+        Scene scene = GameManager.INSTANCE.getScene(gameId);
         
         messages = new ArrayList<>();
-        // FIXME
         
         GameDataMessage msg;
         while ((msg = GameDataDecoder.decode(scene, reader, isSpawning)) != null) {

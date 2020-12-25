@@ -6,13 +6,12 @@ import java.util.Objects;
 
 import com.sekwah.mira4j.api.Player;
 import com.sekwah.mira4j.config.TaskInfo;
-import com.sekwah.mira4j.network.ClientConnectionManager;
 import com.sekwah.mira4j.network.packets.net.Component;
 import com.sekwah.mira4j.utils.Nullable;
 
 public class PlayerDB implements Player {
     private final int clientId;
-    public ClientConnectionManager manager;
+    protected GameLobby lobby;
     
     private String name = "";
     private boolean isDisconnected;
@@ -26,7 +25,7 @@ public class PlayerDB implements Player {
     
     private TaskInfo[] tasks;
     
-    private Map<Integer, Component> components = new HashMap<>();
+    private Map<Integer, Component> comps = new HashMap<>();
     private boolean dirty;
     
     public PlayerDB(int clientId) {
@@ -41,6 +40,11 @@ public class PlayerDB implements Player {
     @Override
     public int getClientId() {
         return clientId;
+    }
+    
+    @Override
+    public GameLobby getLobby() {
+        return lobby;
     }
     
     @Override
@@ -144,14 +148,14 @@ public class PlayerDB implements Player {
         return hashCode() == obj.hashCode();
     }
     
-    public void addComponent(Component comp) {
+    protected void addComponent(Component comp) {
         if (comp == null) return;
-        components.put(comp.getNetId(), comp);
+        comps.put(comp.getNetId(), comp);
     }
     
     @Nullable
     public <T extends Component> T getComponent(Class<T> type) {
-        for (Component comp : components.values()) {
+        for (Component comp : comps.values()) {
             if (type.isInstance(comp)) {
                 return type.cast(comp);
             }
@@ -162,7 +166,7 @@ public class PlayerDB implements Player {
     
     @Nullable
     public Component getComponent(int netId) {
-        return components.get(netId);
+        return comps.get(netId);
     }
     
     @Override

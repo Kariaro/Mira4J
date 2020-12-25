@@ -1,7 +1,10 @@
 package com.sekwah.mira4j.api;
 
 import com.sekwah.mira4j.config.TaskInfo;
+import com.sekwah.mira4j.impl.unity.GameLobby;
+import com.sekwah.mira4j.network.packets.net.Component;
 import com.sekwah.mira4j.utils.NonNull;
+import com.sekwah.mira4j.utils.Nullable;
 
 public interface Player {
     /**
@@ -15,6 +18,20 @@ public interface Player {
      * @return the client id of this player
      */
     int getClientId();
+    
+    /**
+     * Returns the lobby that this player is connected to.
+     * @return the lobby that this player is connected to
+     */
+    @NonNull GameLobby getLobby();
+    
+    /**
+     * Returns the component with the specified <code>type</code> inside this player.
+     * @param <T> the component type
+     * @param type the component class
+     * @return the component with the specified <code>type</code
+     */
+    @Nullable <T extends Component> T getComponent(Class<T> type);
     
     /**
      * Returns the color id of this player.

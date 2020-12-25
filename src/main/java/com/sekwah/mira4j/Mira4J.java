@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.sekwah.mira4j.config.ServerConfig;
 import com.sekwah.mira4j.data.DataStorage;
-import com.sekwah.mira4j.game.GameManager;
+import com.sekwah.mira4j.impl.unity.GameManager;
 import com.sekwah.mira4j.network.Server;
 
 public class Mira4J {

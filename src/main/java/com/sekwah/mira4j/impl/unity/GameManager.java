@@ -1,43 +1,40 @@
-package com.sekwah.mira4j.game;
+package com.sekwah.mira4j.impl.unity;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.sekwah.mira4j.api.Player;
 import com.sekwah.mira4j.api.Scene;
-import com.sekwah.mira4j.impl.unity.PlayerDB;
-import com.sekwah.mira4j.impl.unity.SceneDB;
 import com.sekwah.mira4j.utils.GameUtils;
 import com.sekwah.mira4j.utils.Nullable;
 
 public class GameManager {
     public static final GameManager INSTANCE = new GameManager();
     private static final Runnable LOBBY_COLLECTOR = () -> {
-        Map<Integer, GameLobby> lobbies = GameManager.INSTANCE.lobbies;
-        
-        while(true) {
-            try {
-                Thread.sleep(1000);
-            } catch(InterruptedException e) {
-                break;
-            }
-            
-            long now = System.currentTimeMillis();
-            Iterator<GameLobby> iter = lobbies.values().iterator();
-            while(iter.hasNext()) {
-                GameLobby lobby = iter.next();
-                
-                long ellapsed = now - lobby.getCreationTime();
-                
-                // 10 seconds
-                if(ellapsed > 10000) {
-                    lobby.disconnect();
-                    iter.remove();
-                }
-            }
-        }
+//        Map<Integer, GameLobby> lobbies = GameManager.INSTANCE.lobbies;
+//        
+//        while(true) {
+//            try {
+//                Thread.sleep(1000);
+//            } catch(InterruptedException e) {
+//                break;
+//            }
+//            
+//            long now = System.currentTimeMillis();
+//            Iterator<GameLobby> iter = lobbies.values().iterator();
+//            while(iter.hasNext()) {
+//                GameLobby lobby = iter.next();
+//                
+//                long ellapsed = now - lobby.getCreationTime();
+//                
+//                // 10 seconds
+//                if(ellapsed > 10000) {
+//                    lobby.disconnect();
+//                    iter.remove();
+//                }
+//            }
+//        }
     };
     
     public static final void init() {
@@ -48,7 +45,6 @@ public class GameManager {
     
     private static final AtomicInteger lobby_id_count = new AtomicInteger();
     private static final AtomicInteger session_id_count = new AtomicInteger(2);
-    private static final AtomicInteger client_id_count = new AtomicInteger(2);
     
     // Garbage queue?
     private Map<Integer, GameLobby> lobbies = new HashMap<>();
@@ -58,7 +54,7 @@ public class GameManager {
         
     }
     
-    public static int newSessionId() {
+    public static int nextSessionId() {
         return session_id_count.getAndIncrement();
     }
     
@@ -81,17 +77,6 @@ public class GameManager {
     
     public GameLobby getLobby(int gameId) {
         return lobbies.get(gameId);
-    }
-
-    public static Player newPlayer() {
-        int id = client_id_count.getAndIncrement();
-        Player player = new PlayerDB(id);
-        INSTANCE.clients.put(id, player);
-        return player;
-    }
-    
-    public Player getPlayer(int clientId) {
-        return clients.get(clientId);
     }
     
     public void onPlayerDisconnect(PlayerDB player) {

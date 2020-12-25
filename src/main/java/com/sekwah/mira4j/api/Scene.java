@@ -1,32 +1,29 @@
 package com.sekwah.mira4j.api;
 
+import java.util.List;
+
 import com.sekwah.mira4j.network.packets.net.Component;
 import com.sekwah.mira4j.utils.NonNull;
 import com.sekwah.mira4j.utils.Nullable;
 
 public interface Scene {
-    // Because AmongUs is made in unity each server is treated as a scene
-    // and inside a scene we have access to all scripts and objects with
-    // methods.
-    
-    // A lot of the packages used while playing a game uses those references
-    // so the easiest way would to have all of them extend a base class unique
-    // for each game.
-    
-    // This would create a sandbox thread that has references stored to the
-    // scene that it belongs to.
-    
     /**
-     * Returns the game id for this scene.
-     * @return the game id for this scene
+     * Returns the game id.
+     * @return the game id
      */
     int getGameId();
     
     /**
-     * Returns an array with all the players inside this scene.
-     * @return an array with all the players inside this scene
+     * Returns a list of players inside this scene.
+     * @return a list of players inside this scene
      */
-    @NonNull Player[] getPlayers();
+    @NonNull List<Player> getPlayers();
+    
+    /**
+     * Returns a player from a specified playerId.
+     * @return a player from a specified playerId
+     */
+    @Nullable Player getPlayer(int playerId);
     
     /**
      * Returns the amount of players inside this scene.
@@ -51,7 +48,7 @@ public interface Scene {
      * @param clientId the client id of the player
      * @return the player with the specified client id or <code>null</code>
      */
-    @Nullable Player getPlayer(int clientId);
+    @Nullable Player getPlayerFromClientId(int clientId);
     
     /**
      * Returns the component with the specified <code>netId</code> in this scene.
@@ -68,6 +65,20 @@ public interface Scene {
      * @return the component with the specified <code>netId</code> or <code>null</code>
      */
     @Nullable <T extends Component> T getComponent(Class<T> type, int netId);
+    
+    /**
+     * Add a new component to a player.
+     * @param player the player
+     * @param component the component
+     */
+    void addComponent(Player player, @NonNull Component component);
+    
+    /**
+     * Remove a component from a player.
+     * @param player the player
+     * @param component the component
+     */
+    void removeComponent(Player player, @NonNull Component component);
     
     /**
      * Tick all the scene objects in the world ?!

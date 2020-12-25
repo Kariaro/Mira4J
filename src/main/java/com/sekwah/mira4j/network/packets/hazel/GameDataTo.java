@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sekwah.mira4j.api.Scene;
+import com.sekwah.mira4j.impl.unity.GameManager;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.GameDataType;
 import com.sekwah.mira4j.network.Packets.HazelType;
@@ -20,7 +21,6 @@ public class GameDataTo implements HazelMessage {
     private int targetClientId;
     private List<GameDataMessage> messages;
     private boolean isSpawning;
-    private Scene scene;
     
     public GameDataTo() {
         
@@ -28,14 +28,12 @@ public class GameDataTo implements HazelMessage {
     
     public GameDataTo(Scene scene, int targetClientId, List<GameDataMessage> messages) {
         this.gameId = scene.getGameId();
-        this.scene = scene;
         this.targetClientId = targetClientId;
         this.messages = messages;
     }
     
     public GameDataTo(Scene scene, int targetClientId, GameDataMessage... messages) {
         this(scene.getGameId(), targetClientId, messages);
-        this.scene = scene;
     }
     
     public GameDataTo(int gameId, int targetClientId, GameDataMessage... messages) {
@@ -50,6 +48,8 @@ public class GameDataTo implements HazelMessage {
     @Override
     public void read(PacketBuf reader) {
         gameId = reader.readInt();
+        Scene scene = GameManager.INSTANCE.getScene(gameId);
+        
         targetClientId = reader.readUnsignedPackedInt();
         messages = new ArrayList<>();
         GameDataMessage msg;

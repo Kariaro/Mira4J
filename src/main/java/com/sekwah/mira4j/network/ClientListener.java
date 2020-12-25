@@ -6,8 +6,8 @@ import com.sekwah.mira4j.Mira4J;
 import com.sekwah.mira4j.api.Player;
 import com.sekwah.mira4j.api.Scene;
 import com.sekwah.mira4j.config.*;
-import com.sekwah.mira4j.game.GameLobby;
-import com.sekwah.mira4j.game.GameManager;
+import com.sekwah.mira4j.impl.unity.GameLobby;
+import com.sekwah.mira4j.impl.unity.GameManager;
 import com.sekwah.mira4j.impl.unity.PlayerDB;
 import com.sekwah.mira4j.network.decoder.ClientInListener;
 import com.sekwah.mira4j.network.packets.*;
@@ -23,8 +23,8 @@ public class ClientListener implements ClientInListener {
     private final GameManager gameManager = GameManager.INSTANCE;
     private final ClientConnectionManager manager;
     
+    private PlayerDB client;
     private GameLobby lobby;
-    private Player client;
     
     private int reliable_idx = 1;
     
@@ -81,8 +81,6 @@ public class ClientListener implements ClientInListener {
         manager.sendPacket(ack_packet);
     }
     
-    
-    
     public void onHostGame(HostGame packet) {
         Mira4J.LOGGER.info("A 'HostGame' packet data='{}'", packet.getGameOptionsData());
         
@@ -91,6 +89,16 @@ public class ClientListener implements ClientInListener {
         lobby.setHost(client);
         
         ReliablePacket send = new ReliablePacket(reliable_idx++, new HostGame(lobby));
+        manager.sendPacket(send);
+    }
+    
+    public void onJoinGame(JoinGame packet) {
+        Mira4J.LOGGER.info("A 'JoinGame' packet gameId='{}' ownedMaps='{}'", GameUtils.getStringFromGameId(packet.getGameId()), packet.getOwnedMaps());
+        
+        lobby = gameManager.getLobby(packet.getGameId());
+        lobby.addPlayer(client);
+        
+        ReliablePacket send = new ReliablePacket(reliable_idx++, new JoinedGame(client, lobby));
         manager.sendPacket(send);
     }
     
@@ -113,11 +121,10 @@ public class ClientListener implements ClientInListener {
                 SpawnData message = ((SpawnData)msg);
                 
                 // Is -2 host ?
-                Player player = lobby.getPlayerById(message.getOwnerClientId());
+                Player player = lobby.getPlayerByClientId(message.getOwnerClientId());
                 if (player != null) {
-                    for (Component c : message.getComponents()) {
-                        if (c.getNetId() < 0) continue;
-                        ((PlayerDB)player).addComponent(c);
+                    for (Component component : message.getComponents()) {
+                        lobby.getScene().addComponent(player, component);
                     }
                 }
             }
@@ -125,8 +132,8 @@ public class ClientListener implements ClientInListener {
     }
     
     private void testCmd(int gameId, RPC msg, SendChat chat) {
-        Scene scene = gameManager.getScene(gameId);
-        if (scene == null) return;
+        PlayerControl control = client.getComponent(PlayerControl.class);
+        if (control == null) return;
         
         String cmd = chat.getMessage();
         if (!cmd.startsWith("/")) return;
@@ -135,6 +142,7 @@ public class ClientListener implements ClientInListener {
         String[] parts = cmd.split(" ");
         if (parts.length < 1) return;
         
+        // Check that the component has a reference to this net id!
         int netId = msg.getSenderNetId();
         // A component always has a reference to a player and should only be created inside a player
         // the netId is given by the host of the game and not the server?
@@ -184,7 +192,7 @@ public class ClientListener implements ClientInListener {
             case "chat": {
                 if (parts.length < 2) return;
                 
-                PlayerDB dummy = (PlayerDB)GameManager.newPlayer();
+                PlayerDB dummy = new PlayerDB(GameManager.nextSessionId());
                 setupTest(dummy);
                 
                 ReliablePacket rpck = new ReliablePacket(reliable_idx++, new GameData(gameId, new RPC(dummy.getComponent(PlayerControl.class).getNetId(), SendChat.of(parts[1]))));
@@ -231,12 +239,10 @@ public class ClientListener implements ClientInListener {
                 for (Player p : lobby.getPlayers()) {
                     PlayerControl control = ((PlayerDB)p).getComponent(PlayerControl.class);
                     CustomNetworkTransform cnt = ((PlayerDB)p).getComponent(CustomNetworkTransform.class);
-                    if(control == null && cnt != null) continue;
+                    if(control == null || cnt == null) continue;
                     
                     cnt.lastSequenceId += 1;
-                    GameData pck = new GameData(gameId, new RPC(cnt.getNetId(),
-                        new SnapTo(next, cnt.getLastSequenceId()))
-                    );
+                    GameData pck = new GameData(gameId, new RPC(cnt.getNetId(), new SnapTo(next, cnt.getLastSequenceId())));
                     ReliablePacket rpck = new ReliablePacket(reliable_idx++, pck);
                     manager.sendPacket(rpck);
                 }
@@ -246,7 +252,7 @@ public class ClientListener implements ClientInListener {
         }
         
         if (cmd.equals("/spawn")) {
-            setupTest(GameManager.newPlayer());
+            setupTest(new PlayerDB(GameManager.nextSessionId()));
         }
         
         if (cmd.startsWith("/name ")) {
@@ -272,7 +278,7 @@ public class ClientListener implements ClientInListener {
             
             if (!name.isEmpty()) {
                 for (Player p : lobby.getPlayers()) {
-                    PlayerControl control = ((PlayerDB)p).getComponent(PlayerControl.class);
+                    PlayerControl control = p.getComponent(PlayerControl.class);
                     if(control == null) continue;
                     
                     GameData testing = new GameData(gameId, new RPC(control.getNetId(), new CheckName(name)));
@@ -281,16 +287,6 @@ public class ClientListener implements ClientInListener {
                 }
             }
         }
-    }
-    
-    public void onJoinGame(JoinGame packet) {
-        Mira4J.LOGGER.info("A 'JoinGame' packet gameId='{}' ownedMaps='{}'", GameUtils.getStringFromGameId(packet.getGameId()), packet.getOwnedMaps());
-        
-        lobby = gameManager.getLobby(packet.getGameId());
-        lobby.addPlayer(client);
-        
-        ReliablePacket send = new ReliablePacket(reliable_idx++, new JoinedGame(client, lobby));
-        manager.sendPacket(send);
     }
     
     public void onStartGame(StartGame packet) {
@@ -330,6 +326,7 @@ public class ClientListener implements ClientInListener {
         
         ReliablePacket join_packet = new ReliablePacket(reliable_idx++, new JoinGame(gameId, clientId, client.getClientId()));
         manager.sendPacket(join_packet);
+        lobby.addPlayer(custom);
         
         int control = atomId.getAndIncrement();
         Component[] components = new Component[3];
@@ -340,7 +337,7 @@ public class ClientListener implements ClientInListener {
             components[2] = new CustomNetworkTransform(atomId.getAndIncrement());
             
             for (Component c : components) {
-                ((PlayerDB)custom).addComponent(c);
+                lobby.getScene().addComponent(custom, c);
             }
         }
         
@@ -351,22 +348,21 @@ public class ClientListener implements ClientInListener {
             components
         ));
         
-        lobby.addPlayer(custom);
+        ReliablePacket big_pck = new ReliablePacket(reliable_idx++, data);
+        manager.sendPacket(big_pck);
         
-        HazelMessage[] array = {
-            data,
+        ReliablePacket big_pck2 = new ReliablePacket(reliable_idx++, new HazelMessage[] {
             new GameDataTo(scene, custom.getClientId(), new RPC(control, new CheckName("ServerTestBot"))),
             new GameDataTo(scene, custom.getClientId(), new RPC(control, new CheckColor(2))),
             new GameData(scene, new RPC(control, new SetPet(1))),
             new GameData(scene, new RPC(control, new SetHat(14))),
             new GameData(scene, new RPC(control, new SetSkin(5))),
-        };
-        ReliablePacket big_pck = new ReliablePacket(reliable_idx++, array);
-        manager.sendPacket(big_pck);
+        });
+        manager.sendPacket(big_pck2);
     }
     
     private boolean checkLobbyAccess() {
-        if (lobby == null || client == null) {
+        if (client == null || lobby == null) {
             manager.sendPacket(new DisconnectPacket(DisconnectReason.CUSTOM, "Invalid lobby session"));
             return false;
         }
