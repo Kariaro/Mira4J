@@ -57,4 +57,9 @@ public class ReliablePacket implements Packet<ClientListener> {
     public List<HazelMessage> getMessages() {
         return messages;
     }
+    
+    @Override
+    public String toString() {
+        return messages.toString();
+    }
 }

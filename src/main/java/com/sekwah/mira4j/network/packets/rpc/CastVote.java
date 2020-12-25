@@ -40,6 +40,6 @@ public class CastVote implements RPCMessage {
     
     @Override
     public String toString() {
-        return String.format("CastVote[ votingPlayerId=%s, suspectPlayerId=%d ]", votingPlayerId, suspectPlayerId);
+        return String.format("CastVote[ votingPlayerId=%d, suspectPlayerId=%d ]", votingPlayerId, suspectPlayerId);
     }
 }

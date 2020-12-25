@@ -3,50 +3,47 @@ package com.sekwah.mira4j.network.packets.gamedata;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.GameDataType;
 import com.sekwah.mira4j.network.packets.rpc.RPC;
+import com.sekwah.mira4j.unity.Scene;
 
 public class GameDataDecoder {
-    public static GameDataMessage decode(PacketBuf reader, boolean isSpawning) {
-        if(reader.readableBytes() == 0) return null;
+    public static GameDataMessage decode(Scene scene, PacketBuf reader, boolean isSpawning) {
+        if (reader.readableBytes() == 0) return null;
         
-        int length = reader.readUnsignedShort();
+        reader = reader.readMessageKeepId();
         GameDataType type = GameDataType.fromId(reader.readUnsignedByte());
-        byte[] bytes = reader.readBytes(length);
-        
-        PacketBuf buf = PacketBuf.wrap(bytes);
         
         try {
             GameDataMessage msg = null;
-            if(type == null) return null;
+            if (type == null) return null;
             switch(type) {
                 case Data: {
-                    Data data = new Data();
+                    Data data = new Data(scene);
                     data.read(reader, isSpawning);
                     msg = data;
                     break;
                 }
                 case RPC: {
                     RPC rpc = new RPC();
-                    rpc.read(buf);
+                    rpc.read(reader);
                     msg = rpc;
                     break;
                 }
                 case Spawn: {
                     SpawnData data = new SpawnData();
-                    data.read(buf, isSpawning);
+                    data.read(reader, isSpawning);
                     msg = data;
                     break;
                 }
-                case Despawn: msg = new GameDataMessage.Despawn(buf.readPackedInt()); break;
-                case SceneChange: msg = new GameDataMessage.SceneChange(buf.readPackedInt(), buf.readString()); break;
-                case Ready: msg = new GameDataMessage.Ready(buf.readPackedInt()); break;
+                case Despawn: msg = new GameDataMessage.Despawn(reader.readPackedInt()); break;
+                case SceneChange: msg = new GameDataMessage.SceneChange(reader.readPackedInt(), reader.readString()); break;
+                case Ready: msg = new GameDataMessage.Ready(reader.readPackedInt()); break;
                 case ChangeSettings: // obsolete
                     break;
             }
             
             return msg;
         } finally {
-            // Mira4J.LOGGER.warn("HazelDecoder read more bytes than expected. length={} read={}", length, readBytes);
-            buf.release();
+            reader.release();
         }
     }
 }

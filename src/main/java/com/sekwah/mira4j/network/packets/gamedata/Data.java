@@ -1,38 +1,37 @@
 package com.sekwah.mira4j.network.packets.gamedata;
 
-import java.util.Arrays;
+import java.util.*;
 
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.GameDataType;
 import com.sekwah.mira4j.network.packets.net.Component;
+import com.sekwah.mira4j.network.packets.net.InnerNet;
+import com.sekwah.mira4j.unity.Scene;
 
 public class Data implements GameDataMessage {
-    private int netId;
+    private final Scene scene;
+    
     private Component[] components;
     
-    public Data() {
-        
+    public Data(Scene scene) {
+        this.scene = scene;
     }
     
     @Override
     public void read(PacketBuf reader, boolean isSpawning) {
-        // Problem here is that we need to access the component with the netId provided.
-//        {
-//            reader.markReaderIndex();
-//            byte[] bytes = reader.readBytes(reader.readableBytes());
-//            System.out.println("Array: " + Arrays.toString(bytes));
-//            reader.resetReaderIndex();
-//        }
-//        
-//        netId = reader.readUnsignedPackedInt();
-//        
-//        int length = reader.readUnsignedPackedInt();
-//        components = new Component[length];
-//        
-//        for(int i = 0; i < length; i++) {
-//            Component object = InnerNet.read(reader, netId, isSpawning);
-//            components[i] = object;
-//        }
+        if(scene == null) {
+            components = new Component[0];
+            return;
+        }
+        
+        List<Component> list = new ArrayList<>();
+        
+        Component comp;
+        while ((comp = InnerNet.read(reader, scene)) != null) {
+            list.add(comp);
+        }
+        
+        components = list.toArray(new Component[0]);
     }
     
     @Override
@@ -45,17 +44,12 @@ public class Data implements GameDataMessage {
         return GameDataType.Data.getId();
     }
     
-    public int getNetId() {
-        return netId;
-    }
-    
     public Component[] getComponents() {
         return components;
     }
     
     public String toString() {
-        return String.format("Data { netId=%d, components=%s }",
-            netId,
+        return String.format("Data { components=%s }",
             Arrays.deepToString(components)
         );
     }

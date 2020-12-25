@@ -99,6 +99,18 @@ public class PacketBuf {
         return PacketBuf.wrap(bytes);
     }
     
+    /**
+     * The packet buf returned from this method must call {@link #release()}
+     * @apiNote First byte will be the type id
+     */
+    @NonNull
+    public PacketBuf readMessageKeepId() {
+        if(readableBytes() < 3) return PacketBuf.wrap(new byte[0]); // No header
+        int length = readUnsignedShort();
+        byte[] bytes = readBytes(length + 1);
+        return PacketBuf.wrap(bytes);
+    }
+    
     public short readUnsignedByte() {
         return buffer.readUnsignedByte();
     }
@@ -223,15 +235,15 @@ public class PacketBuf {
     }
     
     public void writeUnsignedShort(int value) {
-        buffer.writeIntLE((int)value);
+        buffer.writeShortLE(value);
     }
     
     public void writeShortBE(int value) {
         buffer.writeShort(value);
     }
     
-    public void writeUnsignedShortBE(long value) {
-        buffer.writeShort((int)value);
+    public void writeUnsignedShortBE(int value) {
+        buffer.writeShort(value);
     }
     
     public void writeInt(int value) {
@@ -267,7 +279,7 @@ public class PacketBuf {
     public void writeUnsignedPackedInt(int value) {
         do {
             int tmp = value & 0x7f;
-            value >>= 7;
+            value >>>= 7;
             if (value != 0) {
                 tmp |= 0x80;
             }

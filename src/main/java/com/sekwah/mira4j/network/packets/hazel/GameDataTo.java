@@ -3,43 +3,46 @@ package com.sekwah.mira4j.network.packets.hazel;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sekwah.mira4j.game.GameManager;
 import com.sekwah.mira4j.network.ClientListener;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.GameDataType;
 import com.sekwah.mira4j.network.Packets.HazelType;
-import com.sekwah.mira4j.network.packets.gamedata.*;
+import com.sekwah.mira4j.network.packets.gamedata.GameDataDecoder;
+import com.sekwah.mira4j.network.packets.gamedata.GameDataMessage;
 import com.sekwah.mira4j.network.packets.gamedata.GameDataMessage.Despawn;
 import com.sekwah.mira4j.network.packets.gamedata.GameDataMessage.Ready;
 import com.sekwah.mira4j.network.packets.gamedata.GameDataMessage.SceneChange;
 import com.sekwah.mira4j.network.packets.rpc.RPC;
 import com.sekwah.mira4j.unity.Scene;
 
-public class GameData implements HazelMessage {
-    private Scene scene;
+public class GameDataTo implements HazelMessage {
     private int gameId;
+    private int targetClientId;
     private List<GameDataMessage> messages;
     private boolean isSpawning;
+    private Scene scene;
     
-    public GameData() {
+    public GameDataTo() {
         
     }
     
-    public GameData(Scene scene, List<GameDataMessage> messages) {
-        this.scene = scene;
+    public GameDataTo(Scene scene, int targetClientId, List<GameDataMessage> messages) {
         this.gameId = scene.getGameId();
+        this.scene = scene;
+        this.targetClientId = targetClientId;
         this.messages = messages;
     }
     
-    public GameData(Scene scene, GameDataMessage... messages) {
-        this(scene.getGameId(), messages);
+    public GameDataTo(Scene scene, int targetClientId, GameDataMessage... messages) {
+        this(scene.getGameId(), targetClientId, messages);
         this.scene = scene;
     }
     
-    public GameData(int gameId, GameDataMessage... messages) {
+    public GameDataTo(int gameId, int targetClientId, GameDataMessage... messages) {
         this.gameId = gameId;
+        this.targetClientId = targetClientId;
         this.messages = new ArrayList<>();
-        for (GameDataMessage msg : messages) {
+        for(GameDataMessage msg : messages) {
             this.messages.add(msg);
         }
     }
@@ -47,13 +50,10 @@ public class GameData implements HazelMessage {
     @Override
     public void read(PacketBuf reader) {
         gameId = reader.readInt();
-        scene = GameManager.INSTANCE.getScene(gameId);
-        
+        targetClientId = reader.readUnsignedPackedInt();
         messages = new ArrayList<>();
-        // FIXME
-        
         GameDataMessage msg;
-        while ((msg = GameDataDecoder.decode(scene, reader, isSpawning)) != null) {
+        while((msg = GameDataDecoder.decode(scene, reader, isSpawning)) != null) {
             messages.add(msg);
         }
     }
@@ -61,11 +61,12 @@ public class GameData implements HazelMessage {
     @Override
     public void write(PacketBuf writer) {
         writer.writeInt(gameId);
+        writer.writeUnsignedPackedInt(targetClientId);
         
-        for (GameDataMessage msg : messages) {
+        for(GameDataMessage msg : messages) {
             writer.startMessage(msg.id());
             
-            switch (GameDataType.fromId(msg.id())) {
+            switch(GameDataType.fromId(msg.id())) {
                 case Despawn: {
                     writer.writeUnsignedPackedInt(((Despawn)msg).net_id);
                     break;
@@ -102,20 +103,19 @@ public class GameData implements HazelMessage {
     
     @Override
     public int id() {
-        return HazelType.GameData.getId();
+        return HazelType.GameDataTo.getId();
     }
     
     @Override
     public void forwardPacket(ClientListener listener) {
-        listener.onGameData(this);
     }
     
     public int getGameId() {
         return gameId;
     }
     
-    public Scene getScene() {
-        return scene;
+    public int getTargetClientId() {
+        return targetClientId;
     }
     
     public List<GameDataMessage> getMessages() {

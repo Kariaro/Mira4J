@@ -1,14 +1,15 @@
 package com.sekwah.mira4j;
 
+import java.io.File;
+import java.net.BindException;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.sekwah.mira4j.config.ServerConfig;
 import com.sekwah.mira4j.data.DataStorage;
 import com.sekwah.mira4j.game.GameManager;
 import com.sekwah.mira4j.network.Server;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.io.File;
-import java.net.BindException;
 
 public class Mira4J {
 
@@ -26,10 +27,10 @@ public class Mira4J {
         ServerConfig serverConfig = dataStorage.loadJson(ServerConfig.class, SERVER_SETTINGS_LOC);
 
         dataStorage.storeJson(serverConfig, SERVER_SETTINGS_LOC);
-        gameManager = new GameManager();
+        gameManager = GameManager.INSTANCE;
         
         server = new Server(gameManager, serverConfig);
-
+        
         try {
             server.start();
         } catch (BindException e) {
@@ -42,5 +43,4 @@ public class Mira4J {
             System.exit(0);
         }
     }
-
 }

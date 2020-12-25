@@ -1,7 +1,7 @@
 package com.sekwah.mira4j.network.packets.hazel;
 
+import com.sekwah.mira4j.api.Player;
 import com.sekwah.mira4j.game.GameLobby;
-import com.sekwah.mira4j.game.Player;
 import com.sekwah.mira4j.network.ClientListener;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.HazelType;

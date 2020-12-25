@@ -1,49 +1,53 @@
 package com.sekwah.mira4j.game;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Objects;
 
+import com.sekwah.mira4j.api.Player;
 import com.sekwah.mira4j.unity.Scene;
+import com.sekwah.mira4j.utils.NonNull;
+import com.sekwah.mira4j.utils.Nullable;
 
 public class GameLobby {
-    private List<Player> players;
-    private GameOptionsData data;
-    private int gameId;
-    private Player host;
-    public Scene scene;
+    private final Scene scene;
+    private final long creationTime;
     
-    public GameLobby(int gameId, Scene scene) {
-        this.gameId = gameId;
-        players = new ArrayList<>();
-        data = new GameOptionsData();
-        this.scene = scene;
+    private GameOptionsData data;
+    private Player host;
+    
+    public GameLobby(@NonNull Scene scene) {
+        this.data = new GameOptionsData();
+        this.scene = Objects.requireNonNull(scene);
+        this.creationTime = System.currentTimeMillis();
     }
     
-    public Player getPlayerById(int id) {
-        Iterator<Player> list = players.iterator();
-        while (list.hasNext()) {
-            Player player = list.next();
-            if (player.getClientId() == id) return player;
-        }
-        
-        return null;
+    public long getCreationTime() {
+        return creationTime;
+    }
+    
+    @Nullable
+    public Player getPlayerById(int clientId) {
+        return scene.getPlayer(clientId);
     }
     
     public void setSettings(GameOptionsData data) {
         data.load(data);
     }
     
+    @NonNull
     public GameOptionsData getSettings() {
         return data;
     }
     
     public int getGameId() {
-        return gameId;
+        return scene.getGameId();
     }
     
     public void addPlayer(Player player) {
-        this.players.add(player);
+        scene.addPlayer(player);
+    }
+    
+    public void removePlayer(Player player) {
+        scene.removePlayer(player);
     }
     
     public void setHost(Player player) {
@@ -55,10 +59,15 @@ public class GameLobby {
     }
     
     public int getNumPlayers() {
-        return players.size();
+        return scene.getNumPlayers();
     }
     
     public Player[] getPlayers() {
-        return players.toArray(new Player[0]);
+        return scene.getPlayers();
+    }
+    
+    @NonNull
+    public Scene getScene() {
+        return scene;
     }
 }

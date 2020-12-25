@@ -3,9 +3,6 @@ package com.sekwah.mira4j;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 
-import com.sekwah.mira4j.config.Color;
-import com.sekwah.mira4j.config.Hat;
-
 public class Launch {
 
     public static void main(String[] args) {

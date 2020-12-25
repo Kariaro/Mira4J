@@ -2,7 +2,7 @@ package com.sekwah.mira4j.network.packets.hazel;
 
 import com.sekwah.mira4j.config.DisconnectReason;
 import com.sekwah.mira4j.game.GameLobby;
-import com.sekwah.mira4j.game.Player;
+import com.sekwah.mira4j.impl.unity.PlayerDB;
 import com.sekwah.mira4j.network.ClientListener;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.HazelType;
@@ -17,7 +17,7 @@ public class RemovePlayer implements HazelMessage {
         
     }
     
-    public RemovePlayer(GameLobby lobby, Player player, DisconnectReason reason) {
+    public RemovePlayer(GameLobby lobby, PlayerDB player, DisconnectReason reason) {
         this.reason = reason;
         this.gameId = lobby.getGameId();
         this.hostClientId = lobby.getHost().getClientId();

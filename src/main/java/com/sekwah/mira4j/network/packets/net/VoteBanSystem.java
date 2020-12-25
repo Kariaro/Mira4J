@@ -4,22 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sekwah.mira4j.config.PlayerInfo;
-import com.sekwah.mira4j.config.TaskInfo;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.NetType;
 
-public class GameData implements Component {
+public class VoteBanSystem implements Component {
     private int netId;
     private List<PlayerInfo> list;
     
-    public GameData() {
+    public VoteBanSystem() {
         
     }
     
-    public GameData(int netId, PlayerInfo info) {
+    public VoteBanSystem(int netId) {
         this.netId = netId;
         list = new ArrayList<>();
-        list.add(info);
     }
     
     @Override
@@ -31,29 +29,14 @@ public class GameData implements Component {
             reader = reader.readMessage();
         }
         
-        int playerCount = isSpawning ? reader.readUnsignedPackedInt():reader.readUnsignedByte();
+        int playerCount = reader.readUnsignedByte();
         for (int i = 0; i < playerCount; i++) {
             PlayerInfo player = new PlayerInfo();
             list.add(player);
             
-            player.playerId = reader.readUnsignedByte();
-            player.name = reader.readString();
-            player.colorId = reader.readUnsignedPackedInt();
-            player.hatId = reader.readUnsignedPackedInt();
-            player.petId = reader.readUnsignedPackedInt();
-            player.skinId = reader.readUnsignedPackedInt();
-            player.flags = reader.readUnsignedByte();
+            int clientId = reader.readInt();
             
-            int length = reader.readUnsignedByte();
-            player.tasks = new TaskInfo[length];
-            
-            for (int j = 0; j < length; j++) {
-                TaskInfo task = new TaskInfo();
-                task.taskId = reader.readUnsignedPackedInt();
-                task.isCompleted = reader.readBoolean();
-                player.tasks[j] = task;
-            }
-            
+            // TODO: Bad documentation?
         }
         
         if (isSpawning) {
@@ -63,12 +46,22 @@ public class GameData implements Component {
     
     @Override
     public void write(PacketBuf writer, boolean isSpawning) {
+        writer.writeUnsignedPackedInt(netId);
         
+        if (isSpawning) {
+            writer.startMessage(0);
+        }
+        
+        writer.writeByte(list.size());
+        
+        if (isSpawning) {
+            writer.endMessage();
+        }
     }
 
     @Override
     public int id() {
-        return NetType.GameData.getId();
+        return NetType.NetGameData.getId();
     }
     
     @Override

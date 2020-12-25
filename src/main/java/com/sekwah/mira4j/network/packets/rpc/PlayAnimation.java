@@ -4,29 +4,29 @@ import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.RPCType;
 
 public class PlayAnimation implements RPCMessage {
-    private byte taskId;
+    private int taskId;
     
     public PlayAnimation() {
         
     }
     
-    public PlayAnimation(byte taskId) {
+    public PlayAnimation(int taskId) {
         this.taskId = taskId;
     }
     
     public void read(PacketBuf reader) {
-        taskId = reader.readByte();
+        taskId = reader.readUnsignedByte();
     }
     
     public void write(PacketBuf writer) {
-        writer.writeByte(taskId);
+        writer.writeUnsignedByte(taskId);
     }
     
     public int id() {
         return RPCType.PlayAnimation.getId();
     }
     
-    public byte getTaskId() {
+    public int getTaskId() {
         return taskId;
     }
     

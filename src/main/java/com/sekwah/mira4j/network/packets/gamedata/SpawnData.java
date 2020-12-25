@@ -37,7 +37,7 @@ public class SpawnData implements GameDataMessage {
         int length = reader.readUnsignedPackedInt();
         components = new Component[length];
         
-        // This is always true I hope
+        // TODO: Make sure that this does not crash!
         switch (spawnType) {
             case PLAYER_CONTROL: {
                 components[0] = InnerNet.read(reader, NetType.PlayerControl.getId(), true);
@@ -50,8 +50,8 @@ public class SpawnData implements GameDataMessage {
                 break;
             }
             case GAME_DATA: {
-                components[0] = InnerNet.read(reader, NetType.GameData.getId(), true);
-                components[1] = InnerNet.read(reader, NetType.GameData.getId(), true);
+                components[0] = InnerNet.read(reader, NetType.NetGameData.getId(), true);
+                components[1] = InnerNet.read(reader, NetType.VoteBanSystem.getId(), true);
                 break;
             }
             default: {

@@ -6,9 +6,9 @@ import com.sekwah.mira4j.network.Packets.NetType;
 
 public class CustomNetworkTransform implements Component {
     private int netId;
-    private int lastSequenceId;
-    private Vector2 targetPosition;
-    private Vector2 targetVelocity;
+    public int lastSequenceId;
+    public Vector2 targetPosition = new Vector2(0, 0);
+    public Vector2 targetVelocity = new Vector2(0, 0);
     
     public CustomNetworkTransform() {
         
@@ -40,7 +40,7 @@ public class CustomNetworkTransform implements Component {
         writer.writeUnsignedPackedInt(netId);
         
         if (isSpawning) {
-            writer.startMessage(0);
+            writer.startMessage(1);
         }
         
         writer.writeUnsignedShort(lastSequenceId);

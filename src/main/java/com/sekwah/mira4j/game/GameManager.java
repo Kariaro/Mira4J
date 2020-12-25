@@ -1,37 +1,35 @@
 package com.sekwah.mira4j.game;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.sekwah.mira4j.api.Player;
+import com.sekwah.mira4j.impl.unity.PlayerDB;
 import com.sekwah.mira4j.impl.unity.SceneDB;
 import com.sekwah.mira4j.unity.Scene;
 import com.sekwah.mira4j.utils.GameUtils;
+import com.sekwah.mira4j.utils.Nullable;
 
 public class GameManager {
-    private final AtomicInteger lobby_id = new AtomicInteger();
-    private final AtomicInteger player_id = new AtomicInteger(2);
+    public static final GameManager INSTANCE = new GameManager();
+    
+    private static final AtomicInteger lobby_id_count = new AtomicInteger();
+    private static final AtomicInteger client_id_count = new AtomicInteger(232);
+    
+    // Garbage queue?
     private Map<Integer, GameLobby> lobbies = new HashMap<>();
-    private Map<Integer, Player> players = new HashMap<>();
+    private Map<Integer, Player> clients = new HashMap<>();
     
-    
-    private List<Scene> scenes = new ArrayList<>();
-    
-    public GameManager() {
+    private GameManager() {
         
-    }
-    
-    public Scene createNewLobby2() {
-        int id = lobby_id.getAndIncrement();
-        SceneDB scene = new SceneDB(this, id);
-        scenes.add(scene);
-        return scene;
     }
     
     public GameLobby createNewLobby() {
-        int id = lobby_id.getAndIncrement();
+        int gameId = GameUtils.generateValidGameInt(lobby_id_count.getAndIncrement());
+        Scene scene = new SceneDB(this, gameId);
         
-        int gameId = GameUtils.generateValidGameInt(id);
-        GameLobby lobby = new GameLobby(gameId, createNewLobby2());
+        GameLobby lobby = new GameLobby(scene);
         lobbies.put(gameId, lobby);
         
         return lobby;
@@ -39,7 +37,7 @@ public class GameManager {
     
     public GameLobby createLobby(String value) {
         int gameId = GameUtils.getIntFromGameString(value);
-        GameLobby lobby = new GameLobby(gameId, new SceneDB(this, gameId));
+        GameLobby lobby = new GameLobby(new SceneDB(this, gameId));
         lobbies.put(gameId, lobby);
         return lobby;
     }
@@ -49,17 +47,24 @@ public class GameManager {
     }
 
     public Player newPlayer() {
-        int id = player_id.getAndIncrement();
-        Player player = new Player(id);
-        players.put(id, player);
+        int id = client_id_count.getAndIncrement();
+        Player player = new PlayerDB(id);
+        clients.put(id, player);
         return player;
     }
     
     public Player getPlayer(int clientId) {
-        return players.get(clientId);
+        return clients.get(clientId);
     }
     
-    public void onPlayerDisconnect(Player player) {
-        players.remove(player.getClientId());
+    public void onPlayerDisconnect(PlayerDB player) {
+        clients.remove(player.getClientId());
+    }
+    
+    @Nullable
+    public Scene getScene(int gameId) {
+        GameLobby lobby = getLobby(gameId);
+        if (lobby == null) return null;
+        return lobby.getScene();
     }
 }

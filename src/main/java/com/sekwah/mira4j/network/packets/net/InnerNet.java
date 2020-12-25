@@ -8,6 +8,7 @@ import java.util.Map;
 import com.sekwah.mira4j.Mira4J;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.NetType;
+import com.sekwah.mira4j.unity.Scene;
 
 public class InnerNet {
     private static final Map<NetType, Class<? extends Component>> map;
@@ -19,7 +20,7 @@ public class InnerNet {
         m.put(NetType.PlayerControl, PlayerControl.class);
         m.put(NetType.PlayerPhysics, PlayerPhysics.class);
         m.put(NetType.CustomNetworkTransform, CustomNetworkTransform.class);
-        m.put(NetType.GameData, GameData.class);
+        m.put(NetType.NetGameData, NetGameData.class);
     }
     
     private static Component newInstance(int id) {
@@ -49,13 +50,23 @@ public class InnerNet {
     public static Component read(PacketBuf reader, int spawnType, boolean isSpawning) {
         Component message = newInstance(spawnType);
         if(message == null) return null;
-        
         message.read(reader, isSpawning);
-        
         return message;
     }
     
-    public static void write(PacketBuf writer, boolean isSpawning, Component message) {
+    public static Component read(PacketBuf reader, Scene scene) {
+        if(scene == null) return null;
+        if(reader.readableBytes() < 1) return null;
         
+        reader.markReaderIndex();
+        int netId = reader.readUnsignedPackedInt();
+        reader.resetReaderIndex();
+        
+        Component message = scene.getComponent(netId);
+        if(message == null) return null;
+        
+        message.read(reader, false);
+        
+        return message;
     }
 }

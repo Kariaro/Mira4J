@@ -1,23 +1,36 @@
-package com.sekwah.mira4j.game;
+package com.sekwah.mira4j.impl.unity;
 
-import com.sekwah.mira4j.api.IPlayer;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+import com.sekwah.mira4j.api.Player;
 import com.sekwah.mira4j.config.TaskInfo;
+import com.sekwah.mira4j.network.packets.net.Component;
+import com.sekwah.mira4j.utils.Nullable;
 
-public class Player implements IPlayer {
+public class PlayerDB implements Player {
     private int clientId;
-    private String name;
+    
+    private String name = "";
     private boolean isDisconnected;
     private boolean isImpostor;
     private boolean isDead;
+    
     private int colorId;
     private int hatId;
     private int petId;
     private int skinId;
+    
+    // This is used ingame
     private TaskInfo[] tasks;
     
+    private Map<Integer, Component> components = new HashMap<>();
+    
+    // If this player needs to update
     private boolean dirty;
     
-    public Player(int clientId) {
+    public PlayerDB(int clientId) {
         this.clientId = clientId;
     }
     
@@ -26,9 +39,30 @@ public class Player implements IPlayer {
         return name;
     }
     
+    public void addComponent(Component comp) {
+        if (comp == null) return;
+        components.put(comp.getNetId(), comp);
+    }
+    
+    @Nullable
+    public <T extends Component> T getComponent(Class<T> type) {
+        for (Component comp : components.values()) {
+            if (type.isInstance(comp)) {
+                return type.cast(comp);
+            }
+        }
+        
+        return null;
+    }
+    
+    @Nullable
+    public Component getComponent(int netId) {
+        return components.get(netId);
+    }
+    
     @Override
     public void setName(String name) {
-        this.name = name;
+        this.name = Objects.requireNonNull(name);
         dirty = true;
     }
     
@@ -123,7 +157,7 @@ public class Player implements IPlayer {
     
     @Override
     public boolean equals(Object obj) {
-        if(!(obj instanceof Player)) return false;
+        if (!(obj instanceof PlayerDB)) return false;
         return hashCode() == obj.hashCode();
     }
     

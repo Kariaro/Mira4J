@@ -1,10 +1,9 @@
 package com.sekwah.mira4j.impl.unity;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
+import com.sekwah.mira4j.api.Player;
 import com.sekwah.mira4j.game.GameManager;
-import com.sekwah.mira4j.game.Player;
 import com.sekwah.mira4j.network.packets.net.Component;
 import com.sekwah.mira4j.unity.Scene;
 import com.sekwah.mira4j.unity.SceneObject;
@@ -15,7 +14,7 @@ public class SceneDB implements Scene {
     private final int gameId;
     // Concurent hash map!?
     private final Map<Integer, SceneObject> objects = new HashMap<>();
-    private final Player[] players = new Player[11]; // MaxLength + 1
+    private final List<Player> players = new ArrayList<>();
     
     public SceneDB(GameManager manager, int gameId) {
         this.manager = manager;
@@ -34,7 +33,13 @@ public class SceneDB implements Scene {
 
     @Override
     public Component getComponent(int netId) {
-        return (Component)objects.get(netId);
+        Iterator<Player> iter = players.iterator();
+        while (iter.hasNext()) {
+            Component comp = ((PlayerDB)iter.next()).getComponent(netId);
+            if(comp != null) return comp;
+        }
+        
+        return null;
     }
 
     @Override
@@ -50,9 +55,34 @@ public class SceneDB implements Scene {
     }
 
     @Override
-    public Player getPlayer(int playerId) {
-        if(playerId < 0 || playerId > 10) return null; // Bad
-        return players[playerId];
+    public Player getPlayer(int clientId) {
+        Iterator<Player> iter = players.iterator();
+        while (iter.hasNext()) {
+            Player player = iter.next();
+            if (player.getClientId() == clientId) return player;
+        }
+        
+        return null;
+    }
+    
+    @Override
+    public Player[] getPlayers() {
+        return players.toArray(new Player[0]);
+    }
+    
+    @Override
+    public int getNumPlayers() {
+        return players.size();
+    }
+    
+    @Override
+    public void addPlayer(Player player) {
+        players.add(player);
+    }
+    
+    @Override
+    public void removePlayer(Player player) {
+        players.remove(player);
     }
     
     @Override

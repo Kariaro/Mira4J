@@ -32,6 +32,6 @@ public class CheckColor implements RPCMessage {
     
     @Override
     public String toString() {
-        return String.format("CheckColor[ colorId=\"%d\" ]", colorId);
+        return String.format("CheckColor[ colorId=%d ]", colorId);
     }
 }

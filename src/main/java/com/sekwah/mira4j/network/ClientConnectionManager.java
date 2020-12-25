@@ -34,7 +34,7 @@ public class ClientConnectionManager extends SimpleChannelInboundHandler<Packet<
     private <T> void forwardToPacket(Packet<T> packet, PacketListener packetListener) {
         try {
             packet.forwardPacket((T)packetListener);
-        } catch(ClassCastException e) {
+        } catch (ClassCastException e) {
             e.printStackTrace();
         }
     }
@@ -96,14 +96,14 @@ public class ClientConnectionManager extends SimpleChannelInboundHandler<Packet<
 
     public void disconnect() {
         hasRemote = false;
-        if(channel == null) return;
+        if (channel == null) return;
         
         ChannelFuture channelfuture = this.channel.disconnect();
         channelfuture.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
     }
 
     public void connect(InetSocketAddress addr) {
-        if(!hasRemote) {
+        if (!hasRemote) {
             hasRemote = true;
             ChannelFuture channelfuture = this.channel.connect(addr);
             channelfuture.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);

@@ -16,6 +16,13 @@ public class NormalPacket implements Packet<ClientListener> {
         messages = new ArrayList<>();
     }
     
+    public NormalPacket(HazelMessage... messages) {
+        this.messages = new ArrayList<>();
+        for(HazelMessage message : messages) {
+            this.messages.add(message);
+        }
+    }
+    
     @Override
     public void readData(PacketBuf reader) {
         HazelMessage msg;
@@ -25,7 +32,11 @@ public class NormalPacket implements Packet<ClientListener> {
     }
 
     @Override
-    public void writeData(PacketBuf writer) {}
+    public void writeData(PacketBuf writer) {
+        for (HazelMessage msg : messages) {
+            msg.write(writer);
+        }
+    }
 
     @Override
     public void forwardPacket(ClientListener listener) {
