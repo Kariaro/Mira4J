@@ -1,5 +1,7 @@
 package com.sekwah.mira4j.network.packets.hazel;
 
+import com.sekwah.mira4j.api.GameLobby;
+import com.sekwah.mira4j.api.Player;
 import com.sekwah.mira4j.config.DisconnectReason;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.HazelType;
@@ -16,6 +18,10 @@ public class JoinGame implements HazelMessage {
         
     }
     
+    public JoinGame(GameLobby lobby, Player custom) {
+        this(lobby.getGameId(), custom.getClientId(), lobby.getHost().getClientId());
+    }
+    
     public JoinGame(int gameId, int clientId, int hostId) {
         this.gameId = gameId;
         this.clientId = clientId;
@@ -25,7 +31,7 @@ public class JoinGame implements HazelMessage {
     public JoinGame(DisconnectReason reason) {
         this.reason = reason;
     }
-    
+
     @Override
     public void read(PacketBuf reader) {
         gameId = reader.readInt();

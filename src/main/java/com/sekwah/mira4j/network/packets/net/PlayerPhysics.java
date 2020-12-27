@@ -3,15 +3,9 @@ package com.sekwah.mira4j.network.packets.net;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.NetType;
 
-public class PlayerPhysics implements Component {
-    private int netId;
-    
+public class PlayerPhysics extends ComponentDB {
     public PlayerPhysics() {
         
-    }
-    
-    public PlayerPhysics(int netId) {
-        this.netId = netId;
     }
     
     @Override
@@ -30,10 +24,6 @@ public class PlayerPhysics implements Component {
     @Override
     public int id() {
         return NetType.PlayerPhysics.getId();
-    }
-    
-    public int getNetId() {
-        return netId;
     }
     
     @Override

@@ -4,11 +4,10 @@ import com.sekwah.mira4j.config.Vector2;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.NetType;
 
-public class CustomNetworkTransform implements Component {
-    private int netId;
-    public int lastSequenceId;
+public class CustomNetworkTransform extends ComponentDB {
     public Vector2 targetPosition = new Vector2(0, 0);
     public Vector2 targetVelocity = new Vector2(0, 0);
+    public int lastSequenceId;
     
     public CustomNetworkTransform() {
         
@@ -55,10 +54,6 @@ public class CustomNetworkTransform implements Component {
     @Override
     public int id() {
         return NetType.CustomNetworkTransform.getId();
-    }
-    
-    public int getNetId() {
-        return netId;
     }
     
     public int getLastSequenceId() {

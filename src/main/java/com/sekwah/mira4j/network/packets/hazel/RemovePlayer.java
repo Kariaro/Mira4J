@@ -1,7 +1,7 @@
 package com.sekwah.mira4j.network.packets.hazel;
 
+import com.sekwah.mira4j.api.GameLobby;
 import com.sekwah.mira4j.config.DisconnectReason;
-import com.sekwah.mira4j.impl.unity.GameLobby;
 import com.sekwah.mira4j.impl.unity.PlayerDB;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.HazelType;

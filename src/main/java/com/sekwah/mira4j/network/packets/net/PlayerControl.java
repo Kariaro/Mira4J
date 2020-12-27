@@ -3,8 +3,7 @@ package com.sekwah.mira4j.network.packets.net;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.NetType;
 
-public class PlayerControl implements Component {
-    private int netId;
+public class PlayerControl extends ComponentDB {
     private int playerId;
     private boolean isNew;
     
@@ -58,10 +57,6 @@ public class PlayerControl implements Component {
     @Override
     public int id() {
         return NetType.PlayerControl.getId();
-    }
-    
-    public int getNetId() {
-        return netId;
     }
     
     public boolean isNew() {

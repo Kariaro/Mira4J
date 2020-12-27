@@ -2,8 +2,8 @@ package com.sekwah.mira4j.network.packets.hazel;
 
 import java.util.List;
 
+import com.sekwah.mira4j.api.GameLobby;
 import com.sekwah.mira4j.api.Player;
-import com.sekwah.mira4j.impl.unity.GameLobby;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.HazelType;
 import com.sekwah.mira4j.network.decoder.ClientInListener;

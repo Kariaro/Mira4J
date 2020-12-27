@@ -11,9 +11,9 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
 
 public class IncomingPacketHandler extends SimpleChannelInboundHandler<DatagramPacket> {
-    private final ClientConnectionManager manager;
+    private final ClientConnection manager;
     
-    public IncomingPacketHandler(ClientConnectionManager manager) {
+    public IncomingPacketHandler(ClientConnection manager) {
         this.manager = manager;
     }
     

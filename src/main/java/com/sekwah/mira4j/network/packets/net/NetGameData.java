@@ -8,16 +8,10 @@ import com.sekwah.mira4j.config.TaskInfo;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.NetType;
 
-public class NetGameData implements Component {
-    private int netId;
+public class NetGameData extends ComponentDB {
     private List<PlayerInfo> list;
     
     public NetGameData() {
-        
-    }
-    
-    public NetGameData(int netId) {
-        this.netId = netId;
         list = new ArrayList<>();
     }
     
@@ -68,11 +62,6 @@ public class NetGameData implements Component {
     @Override
     public int id() {
         return NetType.NetGameData.getId();
-    }
-    
-    @Override
-    public int getNetId() {
-        return netId;
     }
     
     @Override

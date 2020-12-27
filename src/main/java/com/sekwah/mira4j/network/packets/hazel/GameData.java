@@ -47,7 +47,7 @@ public class GameData implements HazelMessage {
     @Override
     public void read(PacketBuf reader) {
         gameId = reader.readInt();
-        Scene scene = GameManager.INSTANCE.getScene(gameId);
+        Scene scene = GameManager.getScene(gameId);
         
         messages = new ArrayList<>();
         

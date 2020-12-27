@@ -10,6 +10,7 @@ import com.sekwah.mira4j.api.Scene;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.NetType;
 
+// FIXME: Make sure that all InnerNet objects check if the player owns the component!
 public class InnerNet {
     private static final Map<NetType, Class<? extends Component>> map;
     static {
@@ -17,10 +18,13 @@ public class InnerNet {
         map = Collections.unmodifiableMap(m);
         
         m.put(NetType.LobbyBehaviour, LobbyBehaviour.class);
+        
         m.put(NetType.PlayerControl, PlayerControl.class);
         m.put(NetType.PlayerPhysics, PlayerPhysics.class);
         m.put(NetType.CustomNetworkTransform, CustomNetworkTransform.class);
+        
         m.put(NetType.NetGameData, NetGameData.class);
+        m.put(NetType.VoteBanSystem, VoteBanSystem.class);
     }
     
     private static Component newInstance(int id) {

@@ -1,24 +1,24 @@
 package com.sekwah.mira4j.impl.unity;
 
 import java.util.List;
-import java.util.Objects;
 
+import com.sekwah.mira4j.api.GameLobby;
 import com.sekwah.mira4j.api.Player;
 import com.sekwah.mira4j.api.Scene;
 import com.sekwah.mira4j.game.GameOptionsData;
 import com.sekwah.mira4j.utils.NonNull;
 import com.sekwah.mira4j.utils.Nullable;
 
-public class GameLobby {
+public class GameLobbyDB implements GameLobby {
     private final Scene scene;
     private final long creationTime;
 
     private GameOptionsData data;
     private int hostId;
     
-    protected GameLobby(@NonNull Scene scene) {
+    protected GameLobbyDB(int gameId) {
         this.data = new GameOptionsData();
-        this.scene = Objects.requireNonNull(scene);
+        this.scene = new SceneDB(gameId);
         this.creationTime = System.currentTimeMillis();
     }
 
@@ -68,6 +68,7 @@ public class GameLobby {
         this.hostId = player.getClientId();
     }
 
+    @Nullable
     public Player getHost() {
         return scene.getPlayerFromClientId(hostId);
     }
@@ -87,5 +88,10 @@ public class GameLobby {
 
     public void disconnect() {
         
+    }
+    
+    public boolean hasExpired() {
+        // TODO: Use a constant value for the expiration time
+        return (System.currentTimeMillis() - creationTime) > 10000; // 1000 seconds
     }
 }

@@ -19,7 +19,7 @@ public class Server implements Runnable {
     private final int port;
     private final String address;
     
-    private final List<ClientConnectionManager> managers = Collections.synchronizedList(new ArrayList<ClientConnectionManager>());
+    private final List<ClientConnection> managers = Collections.synchronizedList(new ArrayList<ClientConnection>());
     private final Thread tickThread = new Thread(this);
     
     public static Server getInstance() {
@@ -44,7 +44,7 @@ public class Server implements Runnable {
                     .handler(new ChannelInitializer<DatagramChannel>() {
                         @Override
                         public void initChannel(final DatagramChannel ch) throws Exception {
-                            ClientConnectionManager manager = new ClientConnectionManager();
+                            ClientConnection manager = new ClientConnection();
                             
                             ChannelPipeline p = ch.pipeline();
                             p.addLast(
@@ -67,9 +67,9 @@ public class Server implements Runnable {
     
     public void tick() {
         synchronized(managers) {
-            Iterator<ClientConnectionManager> iterator = managers.iterator();
+            Iterator<ClientConnection> iterator = managers.iterator();
             while(iterator.hasNext()) {
-                ClientConnectionManager manager = iterator.next();
+                ClientConnection manager = iterator.next();
                 
                 if(manager.hasClient()) {
                     try {

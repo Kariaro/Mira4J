@@ -7,16 +7,10 @@ import com.sekwah.mira4j.config.PlayerInfo;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.NetType;
 
-public class VoteBanSystem implements Component {
-    private int netId;
+public class VoteBanSystem extends ComponentDB {
     private List<PlayerInfo> list;
     
     public VoteBanSystem() {
-        
-    }
-    
-    public VoteBanSystem(int netId) {
-        this.netId = netId;
         list = new ArrayList<>();
     }
     
@@ -65,13 +59,8 @@ public class VoteBanSystem implements Component {
     }
     
     @Override
-    public int getNetId() {
-        return netId;
-    }
-    
-    @Override
     public String toString() {
-        return String.format("GameData[ netId=%s, list=%s ]", netId, list);
+        return String.format("VoteBanSystem[ netId=%s, list=%s ]", netId, list);
     }
     
 }

@@ -1,26 +1,17 @@
 package com.sekwah.mira4j.impl.unity;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import com.sekwah.mira4j.Mira4J;
 import com.sekwah.mira4j.api.Player;
 import com.sekwah.mira4j.api.Scene;
 import com.sekwah.mira4j.network.packets.net.Component;
+import com.sekwah.mira4j.network.packets.net.ComponentDB;
 import com.sekwah.mira4j.utils.GameUtils;
 
-/**
- *<PRE>
- *Scene:
- *    root:
- *        player1:
- *            &lt;components&gt
- *        player2:
- *            &lt;components&gt
- *        player3:
- *            &lt;components&gt
- *        player4:
- *            &lt;components&gt
- *</PRE>
- */
 public class SceneDB implements Scene {
     private final Map<Integer, Component> objects = new HashMap<>();
     private final Player[] players = new Player[16];
@@ -108,8 +99,16 @@ public class SceneDB implements Scene {
 
     @Override
     public void addComponent(Player player, Component component) {
-        objects.put(component.getNetId(), component);
-        ((PlayerDB)player).addComponent(component);
+        ComponentDB cdb = (ComponentDB)component;
+        PlayerDB pdb = (PlayerDB)player;
+        
+        if(cdb.getPlayer() == null && cdb.getScene() == null) {
+            cdb.load(this, player);
+            pdb.addComponent(component);
+            objects.put(component.getNetId(), component);
+        } else {
+            throw new IllegalStateException("Component already connected to a player");
+        }
     }
 
     @Override
@@ -139,5 +138,35 @@ public class SceneDB implements Scene {
     @Deprecated
     public void tick() {
         // TODO: Should we tick stuff here?
+    }
+    
+    private AtomicInteger atom = new AtomicInteger(128);
+    public <T extends Component> T spawnComponent(Class<T> clazz, Player player) {
+        Constructor<T> constructor;
+        
+        try {
+            constructor = clazz.getDeclaredConstructor();
+        } catch (NoSuchMethodException | SecurityException e) {
+            Mira4J.LOGGER.throwing(e);
+            e.printStackTrace();
+            return null;
+        }
+        
+        T result;
+        try {
+            result = constructor.newInstance();
+        } catch (InstantiationException | IllegalAccessException
+                | IllegalArgumentException | InvocationTargetException e) {
+            Mira4J.LOGGER.throwing(e);
+            e.printStackTrace();
+            return null;
+        }
+        
+        // TODO: Get next available index
+        ComponentDB db = (ComponentDB)result;
+        db.setNetId(atom.getAndIncrement());
+        
+        addComponent(player, result);
+        return result;
     }
 }

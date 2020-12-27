@@ -4,12 +4,21 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import com.sekwah.mira4j.api.GameLobby;
 import com.sekwah.mira4j.api.Player;
+import com.sekwah.mira4j.api.Scene;
 import com.sekwah.mira4j.config.TaskInfo;
+import com.sekwah.mira4j.network.ClientConnection;
 import com.sekwah.mira4j.network.packets.net.Component;
 import com.sekwah.mira4j.utils.Nullable;
 
 public class PlayerDB implements Player {
+    @SuppressWarnings("unused")
+    private final ClientConnection connection;
+    
+    /**
+     * This is the players clientId and is always constant during a session.
+     */
     private final int clientId;
     protected GameLobby lobby;
     
@@ -28,7 +37,8 @@ public class PlayerDB implements Player {
     private Map<Integer, Component> comps = new HashMap<>();
     private boolean dirty;
     
-    public PlayerDB(int clientId) {
+    public PlayerDB(ClientConnection connection, int clientId) {
+        this.connection = connection;
         this.clientId = clientId;
     }
     
@@ -45,6 +55,11 @@ public class PlayerDB implements Player {
     @Override
     public GameLobby getLobby() {
         return lobby;
+    }
+    
+    @Override
+    public Scene getScene() {
+        return lobby.getScene();
     }
     
     @Override

@@ -1,10 +1,18 @@
 package com.sekwah.mira4j.network;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.InetSocketAddress;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import com.sekwah.mira4j.Mira4J;
+import com.sekwah.mira4j.config.DisconnectReason;
 import com.sekwah.mira4j.impl.unity.GameManager;
+import com.sekwah.mira4j.network.packets.AcknowledgePacket;
+import com.sekwah.mira4j.network.packets.DisconnectPacket;
+import com.sekwah.mira4j.network.packets.ReliablePacket;
+import com.sekwah.mira4j.network.packets.hazel.HazelMessage;
 
 import io.netty.channel.*;
 import io.netty.channel.socket.DatagramChannel;
@@ -14,7 +22,7 @@ import io.netty.channel.socket.DatagramChannel;
  *
  * @author HardCoded
  */
-public class ClientConnectionManager extends SimpleChannelInboundHandler<Packet<?>> {
+public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
     private final Queue<Packet<?>> packetQueue = new ConcurrentLinkedQueue<>();
     private DatagramChannel channel;
     private PacketListener listener;
@@ -28,8 +36,13 @@ public class ClientConnectionManager extends SimpleChannelInboundHandler<Packet<
     
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
-        ctx.close();
+        StringWriter writer = new StringWriter();
+        cause.printStackTrace(new PrintWriter(writer));
+        sendPacket(new DisconnectPacket(DisconnectReason.CUSTOM, "Invalid packet received"));
+        disconnect();
+        Mira4J.LOGGER.throwing(cause);
+        
+        // ctx.close();
     }
     
     @Override
@@ -93,6 +106,28 @@ public class ClientConnectionManager extends SimpleChannelInboundHandler<Packet<
     }
     
     public void sendPacket(Packet<?> packet) {
+        if (hasClient()) {
+            updateQueue();
+            sendPacketBack(packet);
+        } else {
+            packetQueue.add(packet);
+        }
+    }
+    
+    private int reliable_idx = 1;
+    public void sendReliablePacket(HazelMessage... messages) {
+        ReliablePacket packet = new ReliablePacket(reliable_idx++, messages);
+        if (hasClient()) {
+            updateQueue();
+            sendPacketBack(packet);
+        } else {
+            packetQueue.add(packet);
+        }
+    }
+    
+    public void sendAcknowledgePacket(int nonce) {
+        // TODO: Calculate the missing packets here!
+        AcknowledgePacket packet = new AcknowledgePacket(nonce, -1);
         if (hasClient()) {
             updateQueue();
             sendPacketBack(packet);

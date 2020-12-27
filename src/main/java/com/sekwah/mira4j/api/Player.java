@@ -1,7 +1,6 @@
 package com.sekwah.mira4j.api;
 
 import com.sekwah.mira4j.config.TaskInfo;
-import com.sekwah.mira4j.impl.unity.GameLobby;
 import com.sekwah.mira4j.network.packets.net.Component;
 import com.sekwah.mira4j.utils.NonNull;
 import com.sekwah.mira4j.utils.Nullable;
@@ -24,6 +23,12 @@ public interface Player {
      * @return the lobby that this player is connected to
      */
     @NonNull GameLobby getLobby();
+    
+    /**
+     * Returns the scene this player belongs to.
+     * @return the scene this player belongs to
+     */
+    @NonNull Scene getScene();
     
     /**
      * Returns the component with the specified <code>type</code> inside this player.
