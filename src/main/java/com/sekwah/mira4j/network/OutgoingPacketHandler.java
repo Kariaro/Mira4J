@@ -32,7 +32,7 @@ public class OutgoingPacketHandler extends ChannelOutboundHandlerAdapter {
             buf.resetReaderIndex();
             
             Mira4J.LOGGER.info("Sending packet {} {}", type, Arrays.toString(packetBuffer));
-            System.out.println(packet);
+            // System.out.println("[" + packet.getClass() + "]");
         }
     }
 }

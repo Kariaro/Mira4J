@@ -1,5 +1,9 @@
 package com.sekwah.mira4j.network;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import com.sekwah.mira4j.Mira4J;
 import com.sekwah.mira4j.api.Player;
 import com.sekwah.mira4j.config.*;
@@ -11,20 +15,24 @@ import com.sekwah.mira4j.network.packets.gamedata.SpawnData;
 import com.sekwah.mira4j.network.packets.hazel.*;
 import com.sekwah.mira4j.network.packets.net.*;
 import com.sekwah.mira4j.network.packets.rpc.*;
-import com.sekwah.mira4j.utils.GameUtils;
 import com.sekwah.mira4j.utils.TestUtil;
 
-public class ClientListener implements ClientInListener {
+public class ClientListenerNew implements ClientInListener {
     private final ClientConnection manager;
     
     private PlayerDB client;
     private GameLobbyDB lobby;
     
-    public ClientListener(ClientConnection manager) {
+    public ClientListenerNew(ClientConnection manager) {
         this.manager = manager;
     }
     
     public void onHelloPacket(HelloPacket packet) {
+        if(client != null) {
+            manager.sendPacket(new DisconnectPacket(DisconnectReason.CUSTOM, "Client already connected"));
+            return;
+        }
+        
         Mira4J.LOGGER.info("A 'Hello' packet version='{}' username='{}'", TestUtil.getVersionString(packet.getVersion()), packet.getUsername());
         
         // Create a new client
@@ -41,45 +49,89 @@ public class ClientListener implements ClientInListener {
     
     public void onReliablePacket(ReliablePacket packet) {
         if (!checkClientAccess()) return;
-        Mira4J.LOGGER.info("A 'Reliable' packet '{}' '{}'", packet.getNonce(), null);//packet.getMessages());
-
         manager.sendAcknowledgePacket(packet.getNonce());
+        Mira4J.LOGGER.info("A 'Reliable' packet '{}' '{}'", packet.getNonce(), Arrays.toString(packet.getData()));
         
+        List<HazelMessage> list = new ArrayList<>();
+        PacketBuf reader = PacketBuf.wrap(packet.getData());
+        try {
+            HazelMessage message;
+            while((message = Hazel.read(client, reader)) != null) {
+                list.add(message);
+            }
+        } finally {
+            reader.release();
+        }
         
-//        for (HazelMessage msg : packet.getMessages()) {
-//            msg.forwardPacket(this);
-//        }
+        for(HazelMessage message : list) {
+            Mira4J.LOGGER.info("A '{}' packet [{}]", message.getClass().getSimpleName(), message);
+            message.forwardPacket(this);
+        }
     }
     
     public void onNormalPacket(NormalPacket packet) {
         if (!checkLobbyAccess()) return;
+        // Mira4J.LOGGER.info("A 'Normal' packet '{}'", Arrays.toString(packet.getData()));
         
-        // Mira4J.LOGGER.info("A 'Normal' packet '{}'", packet.getMessages());
+        List<HazelMessage> list = new ArrayList<>();
+        PacketBuf reader = PacketBuf.wrap(packet.getData());
+        try {
+            HazelMessage message;
+            while((message = Hazel.read(client, reader)) != null) {
+                list.add(message);
+            }
+        } finally {
+            reader.release();
+        }
         
-//        for (HazelMessage msg : packet.getMessages()) {
-//            msg.forwardPacket(this);
-//        }
+        for(HazelMessage message : list) {
+            Mira4J.LOGGER.info("A '{}' packet [{}]", message.getClass().getSimpleName(), message);
+            message.forwardPacket(this);
+        }
     }
     
     public void onAcknowledgePacket(AcknowledgePacket packet) {
         if (!checkLobbyAccess()) return;
-        // Mira4J.LOGGER.info("A 'Acknowledge' packet '{}' '{}'", packet.getNonce(), packet.getMissingPackets());
+        
     }
     
     public void onKeepAlivePacket(PingPacket packet) {
         if (!checkLobbyAccess()) return;
-
         manager.sendAcknowledgePacket(packet.getNonce());
     }
     
     
     
-    
-    
-    
-    public void onHostGame(HostGame packet) {
-        Mira4J.LOGGER.info("A 'HostGame' packet data='{}'", packet.getGameOptionsData());
+    /**
+     * @return <code>true</code> if we have a valid client and lobby session
+     */
+    private boolean checkLobbyAccess() {
+        if (client == null || lobby == null) {
+            manager.sendPacket(new DisconnectPacket(DisconnectReason.CUSTOM, "Invalid lobby session"));
+            return false;
+        }
         
+        if (lobby != null && lobby.hasExpired()) {
+            client = null;
+            lobby = null;
+            manager.sendPacket(new DisconnectPacket(DisconnectReason.CUSTOM, "Lobby has expired"));
+            return false;
+        }
+        
+        return true;
+    }
+    
+    private boolean checkClientAccess() {
+        if (client == null) {
+            manager.sendPacket(new DisconnectPacket(DisconnectReason.CUSTOM, "Invalid client session"));
+            return false;
+        }
+        
+        return true;
+    }
+    
+    // Hazel
+    public void onHostGame(HostGame packet) {
         lobby = (GameLobbyDB)GameManager.createLobby("SEKWAH");
         lobby.setSettings(packet.getGameOptionsData());
         lobby.setHost(client);
@@ -88,8 +140,6 @@ public class ClientListener implements ClientInListener {
     }
     
     public void onJoinGame(JoinGame packet) {
-        Mira4J.LOGGER.info("A 'JoinGame' packet gameId='{}' ownedMaps='{}'", GameUtils.getStringFromGameId(packet.getGameId()), packet.getOwnedMaps());
-        
         lobby = (GameLobbyDB)GameManager.getLobby(packet.getGameId());
         if (!checkLobbyAccess()) return;
         lobby.addPlayer(client);
@@ -98,11 +148,7 @@ public class ClientListener implements ClientInListener {
     }
     
     public void onGameData(GameData packet) {
-        // Mira4J.LOGGER.info("A 'GameData' packet messages={}", packet.getMessages().size());
-        
         for (GameDataMessage msg : packet.getMessages()) {
-            Mira4J.LOGGER.info(msg.toString());
-            
             if (msg instanceof RPC) {
                 RPCMessage message = ((RPC)msg).getMessage();
                 
@@ -233,11 +279,10 @@ public class ClientListener implements ClientInListener {
                 y = (float)(double)Double.valueOf(part[1]);
                 Vector2 next = new Vector2(x, y);
                 
-                for (Player p : lobby.getPlayers()) {
-                    PlayerControl control = ((PlayerDB)p).getComponent(PlayerControl.class);
-                    CustomNetworkTransform cnt = ((PlayerDB)p).getComponent(CustomNetworkTransform.class);
-                    if(control == null || cnt == null) continue;
-                    
+                PlayerControl control = client.getComponent(PlayerControl.class);
+                CustomNetworkTransform cnt = client.getComponent(CustomNetworkTransform.class);
+                
+                if(control != null && cnt != null) {
                     cnt.lastSequenceId += 1;
                     GameData pck = GameData.of(lobby, new RPC(cnt.getNetId(), new SnapTo(next, cnt.getLastSequenceId())));
                     manager.sendReliablePacket(pck);
@@ -259,7 +304,7 @@ public class ClientListener implements ClientInListener {
                 if(index < 0) return;
                 
                 String color = name.substring(2, index);
-                name = name.substring(index);
+                name = name.substring(index + 1);
                 
                 if (color.length() == 3) {
                     char a = color.charAt(0);
@@ -273,10 +318,8 @@ public class ClientListener implements ClientInListener {
             }
             
             if (!name.isEmpty()) {
-                for (Player p : lobby.getPlayers()) {
-                    PlayerControl control = p.getComponent(PlayerControl.class);
-                    if(control == null) continue;
-                    
+                PlayerControl control = client.getComponent(PlayerControl.class);
+                if(control != null) {
                     manager.sendReliablePacket(GameData.of(lobby, new RPC(control.getNetId(), new CheckName(name))));
                 }
             }
@@ -317,31 +360,6 @@ public class ClientListener implements ClientInListener {
         });
     }
     
-    private boolean checkLobbyAccess() {
-        if (client == null || lobby == null) {
-            manager.sendPacket(new DisconnectPacket(DisconnectReason.CUSTOM, "Invalid lobby session"));
-            return false;
-        }
-        
-        if (lobby != null && lobby.hasExpired()) {
-            client = null;
-            lobby = null;
-            manager.sendPacket(new DisconnectPacket(DisconnectReason.CUSTOM, "Lobby has expired"));
-            return false;
-        }
-        
-        return true;
-    }
-    
-    private boolean checkClientAccess() {
-        if (client == null) {
-            manager.sendPacket(new DisconnectPacket(DisconnectReason.CUSTOM, "Invalid client session"));
-            return false;
-        }
-        
-        return true;
-    }
-    
     public void onStartGame(StartGame packet) {}
     public void onRemoveGame(RemoveGame packet) {}
     public void onRemovePlayer(RemovePlayer packet) {}
@@ -352,6 +370,8 @@ public class ClientListener implements ClientInListener {
     public void onGameDataTo(GameDataTo packet) {}
     public void onJoinedGame(JoinedGame packet) {}
     public void onRedirect(Redirect packet) {}
+    
+    // RPC
     public void onAddVote(AddVote packet) {}
     public void onCastVote(CastVote packet) {}
     public void onCheckColor(CheckColor packet) {}

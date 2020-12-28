@@ -1,22 +1,25 @@
 package com.sekwah.mira4j.network.packets.hazel;
 
 import com.sekwah.mira4j.api.GameLobby;
+import com.sekwah.mira4j.api.Player;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.HazelType;
 import com.sekwah.mira4j.network.decoder.ClientInListener;
+import com.sekwah.mira4j.utils.NonNull;
 
+/**
+ * Host-to-Game
+ */
 public class StartGame implements HazelMessage {
+    private final Player sender;
     private int gameId;
     
-    public StartGame() {
-        
+    protected StartGame(Player sender) {
+        this.sender = sender;
     }
     
-    public StartGame(GameLobby lobby) {
-        this(lobby.getGameId());
-    }
-    
-    public StartGame(int gameId) {
+    private StartGame(int gameId) {
+        this.sender = null;
         this.gameId = gameId;
     }
     
@@ -36,11 +39,20 @@ public class StartGame implements HazelMessage {
     }
     
     @Override
+    public Player getSender() {
+        return sender;
+    }
+    
+    @Override
     public void forwardPacket(ClientInListener listener) {
         listener.onStartGame(this);
     }
     
     public int getGameId() {
         return gameId;
+    }
+    
+    public static StartGame of(@NonNull GameLobby lobby) {
+        return new StartGame(lobby.getGameId());
     }
 }

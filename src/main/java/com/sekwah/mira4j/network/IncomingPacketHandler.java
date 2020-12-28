@@ -35,7 +35,9 @@ public class IncomingPacketHandler extends SimpleChannelInboundHandler<DatagramP
         
         PacketType type = Packets.PacketType.fromId(packetBuffer[0]);
         if (type != PacketType.PING
-         && type != PacketType.ACKNOWLEDGEMENT) {
+         && type != PacketType.ACKNOWLEDGEMENT
+         && type != PacketType.RELIABLE
+         && type != PacketType.NORMAL) {
             Mira4J.LOGGER.info("Recieved Packet {} {}", type.toString(), Arrays.toString(packetBuffer));
         }
         

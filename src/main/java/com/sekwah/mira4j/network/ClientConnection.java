@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import com.sekwah.mira4j.Mira4J;
 import com.sekwah.mira4j.config.DisconnectReason;
 import com.sekwah.mira4j.impl.unity.GameManager;
+import com.sekwah.mira4j.network.error.InvalidPacketException;
 import com.sekwah.mira4j.network.packets.AcknowledgePacket;
 import com.sekwah.mira4j.network.packets.DisconnectPacket;
 import com.sekwah.mira4j.network.packets.ReliablePacket;
@@ -36,11 +37,16 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
     
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        StringWriter writer = new StringWriter();
-        cause.printStackTrace(new PrintWriter(writer));
-        sendPacket(new DisconnectPacket(DisconnectReason.CUSTOM, "Invalid packet received"));
-        disconnect();
-        Mira4J.LOGGER.throwing(cause);
+        if(cause instanceof InvalidPacketException) {
+            sendPacket(new DisconnectPacket(DisconnectReason.CUSTOM, "Invalid Packet:\n" + cause.getMessage()));
+            disconnect();
+        } else {
+            StringWriter writer = new StringWriter();
+            cause.printStackTrace(new PrintWriter(writer));
+            sendPacket(new DisconnectPacket(DisconnectReason.CUSTOM, "Invalid packet received"));
+            disconnect();
+            Mira4J.LOGGER.throwing(cause);
+        }
         
         // ctx.close();
     }

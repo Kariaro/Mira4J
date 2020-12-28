@@ -3,6 +3,8 @@ package com.sekwah.mira4j.network.packets.hazel;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sekwah.mira4j.api.GameLobby;
+import com.sekwah.mira4j.api.Player;
 import com.sekwah.mira4j.api.Scene;
 import com.sekwah.mira4j.impl.unity.GameManager;
 import com.sekwah.mira4j.network.PacketBuf;
@@ -15,29 +17,22 @@ import com.sekwah.mira4j.network.packets.gamedata.GameDataMessage.Despawn;
 import com.sekwah.mira4j.network.packets.gamedata.GameDataMessage.Ready;
 import com.sekwah.mira4j.network.packets.gamedata.GameDataMessage.SceneChange;
 import com.sekwah.mira4j.network.packets.rpc.RPC;
+import com.sekwah.mira4j.utils.NonNull;
 
 public class GameDataTo implements HazelMessage {
+    private final Player sender;
     private int gameId;
     private int targetClientId;
     private List<GameDataMessage> messages;
     private boolean isSpawning;
     
-    public GameDataTo() {
-        
+    protected GameDataTo(Player sender) {
+        this.sender = sender;
     }
     
-    public GameDataTo(Scene scene, int targetClientId, List<GameDataMessage> messages) {
-        this.gameId = scene.getGameId();
-        this.targetClientId = targetClientId;
-        this.messages = messages;
-    }
-    
-    public GameDataTo(Scene scene, int targetClientId, GameDataMessage... messages) {
-        this(scene.getGameId(), targetClientId, messages);
-    }
-    
-    public GameDataTo(int gameId, int targetClientId, GameDataMessage... messages) {
-        this.gameId = gameId;
+    private GameDataTo(GameLobby lobby, int targetClientId, GameDataMessage... messages) {
+        this.sender = null;
+        this.gameId = lobby.getGameId();
         this.targetClientId = targetClientId;
         this.messages = new ArrayList<>();
         for(GameDataMessage msg : messages) {
@@ -107,6 +102,11 @@ public class GameDataTo implements HazelMessage {
     }
     
     @Override
+    public Player getSender() {
+        return sender;
+    }
+    
+    @Override
     public void forwardPacket(ClientInListener listener) {
         listener.onGameDataTo(this);
     }
@@ -126,5 +126,9 @@ public class GameDataTo implements HazelMessage {
     @Override
     public String toString() {
         return messages.toString();
+    }
+    
+    public static GameDataTo of(@NonNull GameLobby lobby, @NonNull Player player, GameDataMessage... messages) {
+        return new GameDataTo(lobby, player.getClientId(), messages);
     }
 }

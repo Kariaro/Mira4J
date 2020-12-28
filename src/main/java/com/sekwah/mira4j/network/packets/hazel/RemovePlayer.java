@@ -1,23 +1,29 @@
 package com.sekwah.mira4j.network.packets.hazel;
 
 import com.sekwah.mira4j.api.GameLobby;
+import com.sekwah.mira4j.api.Player;
 import com.sekwah.mira4j.config.DisconnectReason;
-import com.sekwah.mira4j.impl.unity.PlayerDB;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.HazelType;
 import com.sekwah.mira4j.network.decoder.ClientInListener;
 
+/**
+ * Host-to-Client<br>
+ * Server-to-Game
+ */
 public class RemovePlayer implements HazelMessage {
+    private final Player sender;
     private int gameId;
     private int disconnectedClientId; 
     private int hostClientId;
     private DisconnectReason reason;
     
-    public RemovePlayer() {
-        
+    protected RemovePlayer(Player sender) {
+        this.sender = sender;
     }
     
-    public RemovePlayer(GameLobby lobby, PlayerDB player, DisconnectReason reason) {
+    private RemovePlayer(GameLobby lobby, Player player, DisconnectReason reason) {
+        this.sender = null;
         this.reason = reason;
         this.gameId = lobby.getGameId();
         this.hostClientId = lobby.getHost().getClientId();
@@ -39,6 +45,11 @@ public class RemovePlayer implements HazelMessage {
     }
     
     @Override
+    public Player getSender() {
+        return sender;
+    }
+    
+    @Override
     public void forwardPacket(ClientInListener listener) {
         listener.onRemovePlayer(this);
     }
@@ -48,6 +59,7 @@ public class RemovePlayer implements HazelMessage {
         return HazelType.RemovePlayer.getId();
     }
     
+    @Override
     public int getGameId() {
         return gameId;
     }

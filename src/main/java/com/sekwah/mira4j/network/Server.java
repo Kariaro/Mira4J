@@ -53,7 +53,7 @@ public class Server implements Runnable {
                             );
                             
                             managers.add(manager);
-                            manager.setPacketListener(new ClientListener(manager));
+                            manager.setPacketListener(new ClientListenerNew(manager));
                             p.addLast(manager);
                         }
                     });

@@ -3,10 +3,14 @@ package com.sekwah.mira4j.network.packets.hazel;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import com.sekwah.mira4j.api.Player;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.HazelType;
 import com.sekwah.mira4j.network.decoder.ClientInListener;
 
+/**
+ * Server-to-Client
+ */
 public class Redirect implements HazelMessage {
     private InetAddress addr;
     private int port;
@@ -45,6 +49,19 @@ public class Redirect implements HazelMessage {
     @Override
     public int id() {
         return HazelType.Redirect.getId();
+    }
+    
+    /**
+     * This packet has no sender
+     */
+    @Deprecated
+    public Player getSender() {
+        return null;
+    }
+    
+    @Override
+    public int getGameId() {
+        return 0;
     }
     
     public InetAddress getAddress() {

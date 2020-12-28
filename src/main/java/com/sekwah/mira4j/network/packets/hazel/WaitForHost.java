@@ -1,18 +1,24 @@
 package com.sekwah.mira4j.network.packets.hazel;
 
+import com.sekwah.mira4j.api.Player;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.HazelType;
 import com.sekwah.mira4j.network.decoder.ClientInListener;
 
+/**
+ * Client-to-Host
+ */
 public class WaitForHost implements HazelMessage {
+    private final Player sender;
     private int gameId;
     private int rejoiningClientId;
     
-    public WaitForHost() {
-        
+    protected WaitForHost(Player sender) {
+        this.sender = sender;
     }
     
-    public WaitForHost(int gameId, int rejoiningClientId) {
+    public WaitForHost(Player sender, int gameId, int rejoiningClientId) {
+        this.sender = sender;
         this.gameId = gameId;
         this.rejoiningClientId = rejoiningClientId;
     }
@@ -32,6 +38,11 @@ public class WaitForHost implements HazelMessage {
     @Override
     public int id() {
         return HazelType.WaitForHost.getId();
+    }
+    
+    @Override
+    public Player getSender() {
+        return sender;
     }
     
     @Override

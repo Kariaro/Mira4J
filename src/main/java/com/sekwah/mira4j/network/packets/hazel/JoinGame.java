@@ -6,36 +6,41 @@ import com.sekwah.mira4j.config.DisconnectReason;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.HazelType;
 import com.sekwah.mira4j.network.decoder.ClientInListener;
+import com.sekwah.mira4j.utils.GameUtils;
 
+/**
+ * Client-to-Server<br>
+ * Server-to-Game<br>
+ * Server-to-Client
+ */
 public class JoinGame implements HazelMessage {
+    private final Player sender;
     private int gameId;
-    private byte ownedMaps;
+    private int ownedMaps;
     private int clientId;
     private int hostId;
     private DisconnectReason reason;
     
-    public JoinGame() {
-        
+    protected JoinGame(Player sender) {
+        this.sender = sender;
     }
     
-    public JoinGame(GameLobby lobby, Player custom) {
-        this(lobby.getGameId(), custom.getClientId(), lobby.getHost().getClientId());
-    }
-    
-    public JoinGame(int gameId, int clientId, int hostId) {
+    private JoinGame(Player sender, int gameId, int clientId, int hostId) {
+        this.sender = sender;
         this.gameId = gameId;
         this.clientId = clientId;
         this.hostId = hostId;
     }
     
-    public JoinGame(DisconnectReason reason) {
+    private JoinGame(Player sender, DisconnectReason reason) {
+        this.sender = sender;
         this.reason = reason;
     }
 
     @Override
     public void read(PacketBuf reader) {
         gameId = reader.readInt();
-        ownedMaps = reader.readByte();
+        ownedMaps = reader.readUnsignedByte();
     }
     
     @Override
@@ -55,6 +60,11 @@ public class JoinGame implements HazelMessage {
     }
     
     @Override
+    public Player getSender() {
+        return sender;
+    }
+    
+    @Override
     public void forwardPacket(ClientInListener listener) {
         listener.onJoinGame(this);
     }
@@ -63,7 +73,25 @@ public class JoinGame implements HazelMessage {
         return gameId;
     }
     
-    public byte getOwnedMaps() {
+    public int getOwnedMaps() {
         return ownedMaps;
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("gameId='%s' ownedMaps=%d", GameUtils.getStringFromGameId(gameId), ownedMaps);
+    }
+    
+    public static JoinGame of(Player player, GameLobby lobby) {
+        return new JoinGame(
+            player,
+            lobby.getGameId(),
+            player.getClientId(),
+            lobby.getHost().getClientId()
+        );
+    }
+    
+    public static JoinGame of(Player player, DisconnectReason reason) {
+        return new JoinGame(player, reason);
     }
 }

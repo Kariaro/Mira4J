@@ -6,11 +6,11 @@ import java.util.List;
 import com.sekwah.mira4j.network.Packet;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.decoder.ClientInListener;
-import com.sekwah.mira4j.network.packets.hazel.Hazel;
 import com.sekwah.mira4j.network.packets.hazel.HazelMessage;
 
 public class NormalPacket implements Packet<ClientInListener> {
     private List<HazelMessage> messages;
+    private byte[] data;
     
     public NormalPacket() {
         messages = new ArrayList<>();
@@ -25,10 +25,14 @@ public class NormalPacket implements Packet<ClientInListener> {
     
     @Override
     public void readData(PacketBuf reader) {
-        HazelMessage msg;
-        while ((msg = Hazel.read(reader)) != null) {
-            messages.add(msg);
-        }
+        //reader.markReaderIndex();
+        data = reader.readBytes(reader.readableBytes());
+        //reader.resetReaderIndex();
+        
+//        HazelMessage msg;
+//        while ((msg = Hazel.read(reader)) != null) {
+//            messages.add(msg);
+//        }
     }
 
     @Override
@@ -43,7 +47,11 @@ public class NormalPacket implements Packet<ClientInListener> {
         listener.onNormalPacket(this);
     }
     
-    public List<HazelMessage> getMessages() {
-        return messages;
+    public byte[] getData() {
+        return data;
     }
+    
+//    public List<HazelMessage> getMessages() {
+//        return messages;
+//    }
 }

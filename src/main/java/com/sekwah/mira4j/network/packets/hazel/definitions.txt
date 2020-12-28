@@ -1,0 +1,7 @@
+Names
+
+
+Server - The Mira4J server
+Host   - The client that sent the HostGame packet
+Client - A single client connected to a lobby
+Game   - All clients connected to a lobby

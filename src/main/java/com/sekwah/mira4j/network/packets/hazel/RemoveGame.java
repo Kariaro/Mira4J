@@ -1,10 +1,14 @@
 package com.sekwah.mira4j.network.packets.hazel;
 
+import com.sekwah.mira4j.api.Player;
 import com.sekwah.mira4j.config.DisconnectReason;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.HazelType;
 import com.sekwah.mira4j.network.decoder.ClientInListener;
 
+/**
+ * Server-to-Client
+ */
 public class RemoveGame implements HazelMessage {
     private DisconnectReason reason;
     
@@ -29,6 +33,19 @@ public class RemoveGame implements HazelMessage {
     @Override
     public int id() {
         return HazelType.RemoveGame.getId();
+    }
+    
+    /**
+     * This packet has no sender
+     */
+    @Deprecated
+    public Player getSender() {
+        return null;
+    }
+    
+    @Override
+    public int getGameId() {
+        return 0;
     }
     
     @Override

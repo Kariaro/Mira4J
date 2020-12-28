@@ -92,6 +92,6 @@ public class GameLobbyDB implements GameLobby {
     
     public boolean hasExpired() {
         // TODO: Use a constant value for the expiration time
-        return (System.currentTimeMillis() - creationTime) > 10000; // 1000 seconds
+        return (System.currentTimeMillis() - creationTime) > 10000000; // 1000 seconds
     }
 }

@@ -8,11 +8,20 @@ import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.HazelType;
 import com.sekwah.mira4j.network.decoder.ClientInListener;
 
+/**
+ * Host-to-Client
+ */
 public class JoinedGame implements HazelMessage {
+    private final Player sender;
     private GameLobby lobby;
     private Player player;
     
-    public JoinedGame(Player player, GameLobby lobby) {
+    protected JoinedGame(Player sender) {
+        this.sender = sender;
+    }
+    
+    private JoinedGame(Player player, GameLobby lobby) {
+        this.sender = null;
         this.player = player;
         this.lobby = lobby;
     }
@@ -44,7 +53,20 @@ public class JoinedGame implements HazelMessage {
     }
     
     @Override
+    public Player getSender() {
+        return sender;
+    }
+    
+    public int getGameId() {
+        return lobby.getGameId();
+    }
+    
+    @Override
     public void forwardPacket(ClientInListener listener) {
         listener.onJoinedGame(this);
+    }
+    
+    public static JoinedGame of(Player player, GameLobby lobby) {
+        return new JoinedGame(player, lobby);
     }
 }

@@ -11,6 +11,7 @@ import com.sekwah.mira4j.network.packets.hazel.HazelMessage;
 
 public class ReliablePacket implements Packet<ClientInListener> {
     private int nonce;
+    private byte[] data;
     private List<HazelMessage> messages;
     
     public ReliablePacket() {
@@ -29,12 +30,16 @@ public class ReliablePacket implements Packet<ClientInListener> {
     @Override
     public void readData(PacketBuf reader) {
         nonce = reader.readUnsignedShortBE();
-        messages = new ArrayList<>();
+        //messages = new ArrayList<>();
         
-        HazelMessage msg;
-        while ((msg = Hazel.read(reader)) != null) {
-            messages.add(msg);
-        }
+        //reader.markReaderIndex();
+        data = reader.readBytes(reader.readableBytes());
+        //reader.resetReaderIndex();
+        
+//        HazelMessage msg;
+//        while ((msg = Hazel.read(reader)) != null) {
+//            messages.add(msg);
+//        }
     }
 
     @Override
@@ -54,9 +59,13 @@ public class ReliablePacket implements Packet<ClientInListener> {
         return nonce;
     }
     
-    public List<HazelMessage> getMessages() {
-        return messages;
+    public byte[] getData() {
+        return data;
     }
+    
+//    public List<HazelMessage> getMessages() {
+//        return messages;
+//    }
     
     @Override
     public String toString() {
