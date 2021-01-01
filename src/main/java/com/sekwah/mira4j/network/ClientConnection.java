@@ -45,8 +45,9 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
             cause.printStackTrace(new PrintWriter(writer));
             sendPacket(new DisconnectPacket(DisconnectReason.CUSTOM, "Invalid packet received"));
             disconnect();
-            Mira4J.LOGGER.throwing(cause);
         }
+        
+        Mira4J.LOGGER.throwing(cause);
         
         // ctx.close();
     }
@@ -82,6 +83,10 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
     }
     
     private void sendPacketBack(Packet<?> packet) {
+        if (!channel.isConnected()) {
+            disconnect();
+            return;
+        }
         if (channel.eventLoop().inEventLoop()) {
             ChannelFuture channelfuture = this.channel.writeAndFlush(packet);
             channelfuture.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
@@ -152,6 +157,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
         
         ChannelFuture channelfuture = this.channel.disconnect();
         channelfuture.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
+        reliable_idx = 1;
     }
 
     protected boolean hasRemote() {

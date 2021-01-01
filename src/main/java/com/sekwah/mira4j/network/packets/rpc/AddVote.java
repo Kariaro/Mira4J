@@ -3,6 +3,7 @@ package com.sekwah.mira4j.network.packets.rpc;
 import com.sekwah.mira4j.api.Player;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.RPCType;
+import com.sekwah.mira4j.network.decoder.RPCListener;
 import com.sekwah.mira4j.utils.NonNull;
 
 public class AddVote implements RPCMessage {
@@ -18,18 +19,26 @@ public class AddVote implements RPCMessage {
         this.targetClientId = targetClientId;
     }
     
+    @Override
     public void read(PacketBuf reader) {
         votingClientId = reader.readInt();
         targetClientId = reader.readInt();
     }
     
+    @Override
     public void write(PacketBuf writer) {
         writer.writeUnsignedInt(votingClientId);
         writer.writeUnsignedInt(targetClientId);
     }
     
+    @Override
     public int id() {
         return RPCType.AddVote.getId();
+    }
+    
+    @Override
+    public void forwardPacket(RPC rpc, RPCListener listener) {
+        listener.onAddVote(rpc, this);
     }
     
     public int getVotingClientId() {

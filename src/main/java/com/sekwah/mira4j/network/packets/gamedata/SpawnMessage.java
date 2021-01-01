@@ -3,25 +3,29 @@ package com.sekwah.mira4j.network.packets.gamedata;
 import java.util.Arrays;
 
 import com.sekwah.mira4j.Mira4J;
+import com.sekwah.mira4j.api.Scene;
 import com.sekwah.mira4j.config.SpawnFlag;
 import com.sekwah.mira4j.config.SpawnType;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.GameDataType;
 import com.sekwah.mira4j.network.Packets.NetType;
+import com.sekwah.mira4j.network.decoder.ClientInListener;
 import com.sekwah.mira4j.network.packets.net.Component;
 import com.sekwah.mira4j.network.packets.net.InnerNet;
 
-public class SpawnData implements GameDataMessage {
+public class SpawnMessage implements GameDataMessage {
+    private final Scene scene;
     private SpawnType spawnType;
     private int ownerClientId;
     private int spawnFlags;
     private Component[] components;
     
-    public SpawnData() {
-        
+    public SpawnMessage(Scene scene) {
+        this.scene = scene;
     }
     
-    public SpawnData(SpawnType spawnType, int ownerClientId, int spawnFlags, Component... components) {
+    public SpawnMessage(SpawnType spawnType, int ownerClientId, int spawnFlags, Component... components) {
+        this.scene = null;
         this.spawnType = spawnType;
         this.ownerClientId = ownerClientId;
         this.spawnFlags = spawnFlags;
@@ -40,18 +44,18 @@ public class SpawnData implements GameDataMessage {
         // TODO: Make sure that this does not crash!
         switch (spawnType) {
             case PLAYER_CONTROL: {
-                components[0] = InnerNet.read(reader, NetType.PlayerControl.getId(), true);
-                components[1] = InnerNet.read(reader, NetType.PlayerPhysics.getId(), true);
-                components[2] = InnerNet.read(reader, NetType.CustomNetworkTransform.getId(), true);
+                components[0] = InnerNet.read(reader, scene, NetType.PlayerControl.getId(), true);
+                components[1] = InnerNet.read(reader, scene, NetType.PlayerPhysics.getId(), true);
+                components[2] = InnerNet.read(reader, scene, NetType.CustomNetworkTransform.getId(), true);
                 break;
             }
             case LOBBY_BEHAVIOUR: {
-                components[0] = InnerNet.read(reader, NetType.LobbyBehaviour.getId(), true);
+                components[0] = InnerNet.read(reader, scene, NetType.LobbyBehaviour.getId(), true);
                 break;
             }
             case GAME_DATA: {
-                components[0] = InnerNet.read(reader, NetType.NetGameData.getId(), true);
-                components[1] = InnerNet.read(reader, NetType.VoteBanSystem.getId(), true);
+                components[0] = InnerNet.read(reader, scene, NetType.NetGameData.getId(), true);
+                components[1] = InnerNet.read(reader, scene, NetType.VoteBanSystem.getId(), true);
                 break;
             }
             default: {
@@ -79,6 +83,13 @@ public class SpawnData implements GameDataMessage {
     @Override
     public int id() {
         return GameDataType.Spawn.getId();
+    }
+    
+    @Override
+    public void forwardPacket(ClientInListener listener) {
+        for (Component c : components) {
+            c.forwardPacket(listener);
+        }
     }
     
     public SpawnType getSpawnType() {

@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.RPCType;
+import com.sekwah.mira4j.network.decoder.RPCListener;
 
 public class VotingComplete implements RPCMessage {
     private byte[] voteStates;
@@ -20,6 +21,7 @@ public class VotingComplete implements RPCMessage {
         this.isTie = isTie;
     }
     
+    @Override
     public void read(PacketBuf reader) {
         int length = reader.readUnsignedPackedInt();
         voteStates = reader.readBytes(length);
@@ -27,14 +29,21 @@ public class VotingComplete implements RPCMessage {
         isTie = reader.readBoolean();
     }
     
+    @Override
     public void write(PacketBuf writer) {
         writer.writeUnsignedPackedInt(voteStates.length);
         writer.writeUnsignedByte(exiledPlayerId);
         writer.writeBoolean(isTie);
     }
     
+    @Override
     public int id() {
         return RPCType.VotingComplete.getId();
+    }
+    
+    @Override
+    public void forwardPacket(RPC rpc, RPCListener listener) {
+        listener.onVotingComplete(rpc, this);
     }
     
     public byte[] getVoteStates() {

@@ -11,12 +11,10 @@ import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.GameDataType;
 import com.sekwah.mira4j.network.Packets.HazelType;
 import com.sekwah.mira4j.network.decoder.ClientInListener;
+import com.sekwah.mira4j.network.error.InvalidPacketException;
 import com.sekwah.mira4j.network.packets.gamedata.GameDataDecoder;
 import com.sekwah.mira4j.network.packets.gamedata.GameDataMessage;
-import com.sekwah.mira4j.network.packets.gamedata.GameDataMessage.Despawn;
-import com.sekwah.mira4j.network.packets.gamedata.GameDataMessage.Ready;
 import com.sekwah.mira4j.network.packets.gamedata.GameDataMessage.SceneChange;
-import com.sekwah.mira4j.network.packets.rpc.RPC;
 import com.sekwah.mira4j.utils.NonNull;
 
 public class GameDataTo implements HazelMessage {
@@ -44,11 +42,14 @@ public class GameDataTo implements HazelMessage {
     public void read(PacketBuf reader) {
         gameId = reader.readInt();
         Scene scene = GameManager.getScene(gameId);
+        if(gameId != 0 && sender.getScene() != scene) {
+            throw new InvalidPacketException("Invalid scene");
+        }
         
         targetClientId = reader.readUnsignedPackedInt();
         messages = new ArrayList<>();
         GameDataMessage msg;
-        while((msg = GameDataDecoder.decode(scene, reader, isSpawning)) != null) {
+        while((msg = GameDataDecoder.decode(sender.getScene(), reader, isSpawning)) != null) {
             messages.add(msg);
         }
     }
@@ -63,7 +64,7 @@ public class GameDataTo implements HazelMessage {
             
             switch(GameDataType.fromId(msg.id())) {
                 case Despawn: {
-                    writer.writeUnsignedPackedInt(((Despawn)msg).net_id);
+                    msg.write(writer, isSpawning);
                     break;
                 }
                 case Data: {
@@ -75,11 +76,11 @@ public class GameDataTo implements HazelMessage {
                     break;
                 }
                 case RPC: {
-                    ((RPC)msg).write(writer);
+                    msg.write(writer, isSpawning);
                     break;
                 }
                 case Ready: {
-                    writer.writeUnsignedPackedInt(((Ready)msg).client_id);
+                    msg.write(writer, isSpawning);
                     break;
                 }
                 case SceneChange: {

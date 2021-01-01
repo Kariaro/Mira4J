@@ -2,6 +2,7 @@ package com.sekwah.mira4j.network.packets.rpc;
 
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.RPCType;
+import com.sekwah.mira4j.network.decoder.RPCListener;
 
 public class RepairSystem implements RPCMessage {
     private int systemId;
@@ -18,20 +19,28 @@ public class RepairSystem implements RPCMessage {
         this.amount = amount;
     }
     
+    @Override
     public void read(PacketBuf reader) {
         systemId = reader.readUnsignedByte();
         playerControlNetId = reader.readUnsignedPackedInt();
         amount = reader.readUnsignedByte();
     }
     
+    @Override
     public void write(PacketBuf writer) {
         writer.writeUnsignedByte(systemId);
         writer.writeUnsignedPackedInt(playerControlNetId);
         writer.writeUnsignedByte(amount);
     }
     
+    @Override
     public int id() {
         return RPCType.RepairSystem.getId();
+    }
+    
+    @Override
+    public void forwardPacket(RPC rpc, RPCListener listener) {
+        listener.onRepairSystem(rpc, this);
     }
     
     public int getSystemId() {

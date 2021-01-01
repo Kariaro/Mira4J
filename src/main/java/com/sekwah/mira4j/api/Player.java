@@ -1,6 +1,7 @@
 package com.sekwah.mira4j.api;
 
 import com.sekwah.mira4j.config.TaskInfo;
+import com.sekwah.mira4j.config.Vector2;
 import com.sekwah.mira4j.network.packets.net.Component;
 import com.sekwah.mira4j.utils.NonNull;
 import com.sekwah.mira4j.utils.Nullable;
@@ -11,6 +12,12 @@ public interface Player {
      * @return the name of this player
      */
     @NonNull String getName();
+    
+    /**
+     * Set the name of this player.
+     * @param name the new name of this player
+     */
+    void setName(@NonNull String name);
     
     /**
      * Returns the client id of this player.
@@ -34,7 +41,7 @@ public interface Player {
      * Returns the component with the specified <code>type</code> inside this player.
      * @param <T> the component type
      * @param type the component class
-     * @return the component with the specified <code>type</code
+     * @return the component with the specified <code>type</code>
      */
     @Nullable <T extends Component> T getComponent(Class<T> type);
     
@@ -62,13 +69,10 @@ public interface Player {
      */
     int getSkinId();
     
-    TaskInfo[] getTasks();
+    int getPlayerId();
     
-    /**
-     * Set the name of this player.
-     * @param name the new name of this player
-     */
-    void setName(@NonNull String name);
+    TaskInfo[] getTasks();
+    void setTasks(@NonNull TaskInfo... tasks);
 
     int getFlags();
     void setFlags(int flags);
@@ -76,6 +80,14 @@ public interface Player {
     void setHatId(int hatId);
     void setPetId(int petId);
     void setSkinId(int skinId);
+    
+    void sendChat(@NonNull String message);
+    
+    @NonNull Vector2 getLocation();
+    void setLocation(Vector2 location);
+    
+    @NonNull Vector2 getVelocity();
+    void setVelocity(Vector2 velocity);
     
     boolean isDisconnected();
     boolean isImpostor();

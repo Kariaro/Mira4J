@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.RPCType;
+import com.sekwah.mira4j.network.decoder.RPCListener;
 import com.sekwah.mira4j.utils.NonNull;
 
 public class SendChat implements RPCMessage {
@@ -17,16 +18,24 @@ public class SendChat implements RPCMessage {
         this.message = message;
     }
     
+    @Override
     public void read(PacketBuf reader) {
         message = reader.readString();
     }
     
+    @Override
     public void write(PacketBuf writer) {
         writer.writeString(message);
     }
     
+    @Override
     public int id() {
         return RPCType.SendChat.getId();
+    }
+    
+    @Override
+    public void forwardPacket(RPC rpc, RPCListener listener) {
+        listener.onSendChat(rpc, this);
     }
     
     public String getMessage() {

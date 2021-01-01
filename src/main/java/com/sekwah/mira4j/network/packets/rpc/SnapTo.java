@@ -3,6 +3,7 @@ package com.sekwah.mira4j.network.packets.rpc;
 import com.sekwah.mira4j.config.Vector2;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.RPCType;
+import com.sekwah.mira4j.network.decoder.RPCListener;
 
 public class SnapTo implements RPCMessage {
     private Vector2 position;
@@ -17,18 +18,26 @@ public class SnapTo implements RPCMessage {
         this.lastSequenceId = lastSequenceId;
     }
     
+    @Override
     public void read(PacketBuf reader) {
         position = reader.readVector2();
         lastSequenceId = reader.readUnsignedShort();
     }
     
+    @Override
     public void write(PacketBuf writer) {
         writer.writeVector2(position);
         writer.writeUnsignedShort(lastSequenceId);
     }
     
+    @Override
     public int id() {
         return RPCType.SnapTo.getId();
+    }
+    
+    @Override
+    public void forwardPacket(RPC rpc, RPCListener listener) {
+        listener.onSnapTo(rpc, this);
     }
     
     public Vector2 getPosition() {

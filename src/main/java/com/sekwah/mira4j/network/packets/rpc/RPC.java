@@ -10,6 +10,7 @@ import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.GameDataType;
 import com.sekwah.mira4j.network.Packets.RPCType;
 import com.sekwah.mira4j.network.decoder.BufferObject;
+import com.sekwah.mira4j.network.decoder.ClientInListener;
 import com.sekwah.mira4j.network.packets.gamedata.GameDataMessage;
 
 public class RPC implements BufferObject, GameDataMessage {
@@ -88,6 +89,17 @@ public class RPC implements BufferObject, GameDataMessage {
         this.message = message;
     }
     
+    @Override
+    public void read(PacketBuf reader, boolean isSpawning) {
+        read(reader);
+    }
+    
+    @Override
+    public void write(PacketBuf writer, boolean isSpawning) {
+        write(writer);
+    }
+    
+    @Override
     public void read(PacketBuf reader) {
         senderNetId = reader.readUnsignedPackedInt();
         
@@ -98,10 +110,17 @@ public class RPC implements BufferObject, GameDataMessage {
         message.read(reader);
     }
     
+    @Override
     public void write(PacketBuf writer) {
         writer.writeUnsignedPackedInt(senderNetId);
         writer.writeUnsignedByte(message.id());
         message.write(writer);
+    }
+    
+    @Override
+    public void forwardPacket(ClientInListener listener) {
+        if(message == null) return;
+        message.forwardPacket(this, listener);
     }
     
     public int getSenderNetId() {

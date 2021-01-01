@@ -42,6 +42,14 @@ public class PacketBuf {
         buffer.resetWriterIndex();
     }
     
+    public void writerIndex(int writerIndex) {
+        buffer.writerIndex(writerIndex);
+    }
+    
+    public void readerIndex(int readerIndex) {
+        buffer.readerIndex(readerIndex);
+    }
+    
     public void skipBytes(int length) {
         buffer.skipBytes(length);
     }
@@ -91,7 +99,7 @@ public class PacketBuf {
      */
     @NonNull
     public PacketBuf readMessage() {
-        if(readableBytes() < 3) return PacketBuf.wrap(new byte[0]); // No header
+        if(readableBytes() < 3) return wrap(new byte[0]); // No header
         int length = readUnsignedShort();
         @SuppressWarnings("unused")
         int typeId = readUnsignedByte(); // Unused!?
@@ -105,8 +113,12 @@ public class PacketBuf {
      */
     @NonNull
     public PacketBuf readMessageKeepId() {
-        if(readableBytes() < 3) return PacketBuf.wrap(new byte[0]); // No header
+        if(readableBytes() < 3) return wrap(new byte[0]); // No header
         int length = readUnsignedShort();
+        if(readableBytes() < length + 1) {
+           length = readableBytes() - 1;
+        }
+        
         byte[] bytes = readBytes(length + 1);
         return PacketBuf.wrap(bytes);
     }
@@ -144,7 +156,7 @@ public class PacketBuf {
         while (true) {
             int tmp = readUnsignedByte();
             result |= (tmp & 0x7f) << shift;
-            if((result & 0x80) == 0) break;
+            if((tmp & 0x80) == 0) break;
             shift += 7;
         }
         
@@ -263,7 +275,11 @@ public class PacketBuf {
     }
     
     public void writeVector2(Vector2 vector) {
-        if(vector == null) vector = Vector2.ZERO;
+        if(vector == null) {
+            writeUnsignedShort((int)(0.5f * 65535));
+            writeUnsignedShort((int)(0.5f * 65535));
+            return;
+        }
         
         int x = (int)(((vector.x + 40.0f) / 80.0f) * 65535);
         int y = (int)(((vector.y + 40.0f) / 80.0f) * 65535);
@@ -322,33 +338,38 @@ public class PacketBuf {
     }
     
     public void writeGameOptionsData(GameOptionsData data) {
-        PacketBuf buf = PacketBuf.wrap(new byte[2048]);
-        buf.writeByte(data.version);
-        buf.writeByte(data.maxPlayers);
-        buf.writeUnsignedInt(data.keywords);
-        buf.writeByte(data.maps.getId());
-        buf.writeFloat(data.playerSpeedModifier);
-        buf.writeFloat(data.crewmateLightModifier);
-        buf.writeFloat(data.impostorLightModifier);
-        buf.writeFloat(data.killCooldown);
-        buf.writeByte(data.numCommonTasks);
-        buf.writeByte(data.numLongTasks);
-        buf.writeByte(data.numShortTasks);
-        buf.writeUnsignedInt(data.numEmergencyMeetings);
-        buf.writeByte(data.numImpostors);
-        buf.writeByte(data.killDistance);
-        buf.writeUnsignedInt(data.discussionTime);
-        buf.writeUnsignedInt(data.votingTime);
-        buf.writeBoolean(data.isDefaults);
-        buf.writeByte(data.emergencyCooldown);
-        buf.writeBoolean(data.confirmEjects);
-        buf.writeBoolean(data.visualTasks);
-        buf.writeBoolean(data.anonymousVotes);
-        buf.writeByte(data.taskBarUpdates);
+        PacketBuf buf = PacketBuf.create(4096);
         
-        byte[] bytes = buf.readBytes(buf.readableBytes());
-        writeUnsignedPackedInt(bytes.length);
-        writeBytes(bytes);
+        try {
+            buf.writeByte(data.version);
+            buf.writeByte(data.maxPlayers);
+            buf.writeUnsignedInt(data.keywords);
+            buf.writeByte(data.maps.getId());
+            buf.writeFloat(data.playerSpeedModifier);
+            buf.writeFloat(data.crewmateLightModifier);
+            buf.writeFloat(data.impostorLightModifier);
+            buf.writeFloat(data.killCooldown);
+            buf.writeByte(data.numCommonTasks);
+            buf.writeByte(data.numLongTasks);
+            buf.writeByte(data.numShortTasks);
+            buf.writeUnsignedInt(data.numEmergencyMeetings);
+            buf.writeByte(data.numImpostors);
+            buf.writeByte(data.killDistance);
+            buf.writeUnsignedInt(data.discussionTime);
+            buf.writeUnsignedInt(data.votingTime);
+            buf.writeBoolean(data.isDefaults);
+            buf.writeByte(data.emergencyCooldown);
+            buf.writeBoolean(data.confirmEjects);
+            buf.writeBoolean(data.visualTasks);
+            buf.writeBoolean(data.anonymousVotes);
+            buf.writeByte(data.taskBarUpdates);
+            
+            byte[] bytes = buf.readBytes(buf.readableBytes());
+            writeUnsignedPackedInt(bytes.length);
+            writeBytes(bytes);
+        } finally {
+            buf.release();
+        }
     }
     
     public static PacketBuf wrap(ByteBuf buffer) {
@@ -356,7 +377,8 @@ public class PacketBuf {
     }
     
     public static PacketBuf wrap(byte[] bytes) {
-        return new PacketBuf(Unpooled.wrappedBuffer(bytes));
+        ByteBuf buf = Unpooled.wrappedBuffer(bytes);
+        return new PacketBuf(buf);
     }
 
     /**

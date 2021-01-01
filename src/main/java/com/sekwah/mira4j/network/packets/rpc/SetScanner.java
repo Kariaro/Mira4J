@@ -2,6 +2,7 @@ package com.sekwah.mira4j.network.packets.rpc;
 
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.RPCType;
+import com.sekwah.mira4j.network.decoder.RPCListener;
 
 public class SetScanner implements RPCMessage {
     private boolean isScanning;
@@ -16,18 +17,26 @@ public class SetScanner implements RPCMessage {
         this.count = count;
     }
     
+    @Override
     public void read(PacketBuf reader) {
         isScanning = reader.readBoolean();
         count = reader.readUnsignedByte();
     }
     
+    @Override
     public void write(PacketBuf writer) {
         writer.writeBoolean(isScanning);
         writer.writeUnsignedByte(count);
     }
     
+    @Override
     public int id() {
         return RPCType.SetScanner.getId();
+    }
+    
+    @Override
+    public void forwardPacket(RPC rpc, RPCListener listener) {
+        listener.onSetScanner(rpc, this);
     }
     
     public boolean isScanning() {

@@ -54,7 +54,20 @@ public class InnerNet {
     public static Component read(PacketBuf reader, int spawnType, boolean isSpawning) {
         Component message = newInstance(spawnType);
         if(message == null) return null;
+        
         message.read(reader, isSpawning);
+        return message;
+    }
+    
+    public static Component read(PacketBuf reader, Scene scene, int spawnType, boolean isSpawning) {
+        Component message = newInstance(spawnType);
+        if(message == null) return null;
+        
+        // FIXME: This is a hack
+        ((ComponentDB)message).setScene(scene);
+        message.read(reader, isSpawning);
+        ((ComponentDB)message).setScene(null);
+        
         return message;
     }
     

@@ -5,21 +5,26 @@ import java.util.*;
 import com.sekwah.mira4j.api.Scene;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.GameDataType;
+import com.sekwah.mira4j.network.decoder.ClientInListener;
 import com.sekwah.mira4j.network.packets.net.Component;
 import com.sekwah.mira4j.network.packets.net.InnerNet;
 
-public class Data implements GameDataMessage {
+public class DataMessage implements GameDataMessage {
     private final Scene scene;
-    
     private Component[] components;
     
-    public Data(Scene scene) {
+    public DataMessage(Scene scene) {
         this.scene = scene;
+    }
+    
+    public DataMessage(Scene scene, Component... componenents) {
+        this.scene = scene;
+        this.components = componenents;
     }
     
     @Override
     public void read(PacketBuf reader, boolean isSpawning) {
-        if(scene == null) {
+        if (scene == null) {
             components = new Component[0];
             return;
         }
@@ -36,12 +41,21 @@ public class Data implements GameDataMessage {
     
     @Override
     public void write(PacketBuf writer, boolean isSpawning) {
-        
+        for (Component comp : components) {
+            comp.write(writer, isSpawning);
+        }
     }
     
     @Override
     public int id() {
         return GameDataType.Data.getId();
+    }
+    
+    @Override
+    public void forwardPacket(ClientInListener listener) {
+        for (Component c : components) {
+            c.forwardPacket(listener);
+        }
     }
     
     public Component[] getComponents() {

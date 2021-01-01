@@ -2,17 +2,34 @@ package com.sekwah.mira4j.network.packets.gamedata;
 
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.GameDataType;
+import com.sekwah.mira4j.network.decoder.ClientInListener;
 
 public interface GameDataMessage {
     public class Despawn implements GameDataMessage {
-        public final int net_id;
+        private int net_id;
         
-        public Despawn(int net_id) {
-            this.net_id = net_id;
-        }
-        
+        @Override
         public int id() {
             return GameDataType.Despawn.getId();
+        }
+        
+        @Override
+        public void read(PacketBuf reader, boolean isSpawning) {
+            net_id = reader.readUnsignedPackedInt();
+        }
+        
+        @Override
+        public void write(PacketBuf writer, boolean isSpawning) {
+            writer.writeUnsignedPackedInt(net_id);
+        }
+        
+        @Override
+        public void forwardPacket(ClientInListener listener) {
+            // FIXME: Implement this
+        }
+        
+        public int getNetId() {
+            return net_id;
         }
         
         public String toString() {
@@ -29,24 +46,49 @@ public interface GameDataMessage {
             this.scene = scene;
         }
         
+        @Override
         public int id() {
             return GameDataType.SceneChange.getId();
         }
         
+        @Override
+        public void forwardPacket(ClientInListener listener) {
+            // FIXME: Implement this
+        }
+        
         public String toString() {
-            return "ChangeScene { client_id=" + client_id + ", scene=\"" + scene + "\" }";
+            return "SceneChange { client_id=" + client_id + ", scene=\"" + scene + "\" }";
         }
     }
     
+    /**
+     * Client-to-Host
+     */
     public class Ready implements GameDataMessage {
-        public int client_id;
+        private int client_id;
         
-        public Ready(int client_id) {
-            this.client_id = client_id;
-        }
-        
+        @Override
         public int id() {
             return GameDataType.Ready.getId();
+        }
+        
+        @Override
+        public void read(PacketBuf reader, boolean isSpawning) {
+            client_id = reader.readUnsignedPackedInt();
+        }
+        
+        @Override
+        public void write(PacketBuf writer, boolean isSpawning) {
+            writer.writeUnsignedPackedInt(client_id);
+        }
+        
+        @Override
+        public void forwardPacket(ClientInListener listener) {
+            // FIXME: Implement this
+        }
+        
+        public int getClientId() {
+            return client_id;
         }
         
         public String toString() {
@@ -55,6 +97,7 @@ public interface GameDataMessage {
     }
 
     int id();
+    void forwardPacket(ClientInListener listener);
     default void read(PacketBuf reader, boolean isSpawning) {}
     default void write(PacketBuf writer, boolean isSpawning) {}
 }

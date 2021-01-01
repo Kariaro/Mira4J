@@ -2,6 +2,7 @@ package com.sekwah.mira4j.network.packets.rpc;
 
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.RPCType;
+import com.sekwah.mira4j.network.decoder.RPCListener;
 
 public class SetStartCounter implements RPCMessage {
     private int sequenceId;
@@ -16,18 +17,26 @@ public class SetStartCounter implements RPCMessage {
         this.timeRemaining = timeRemaining;
     }
     
+    @Override
     public void read(PacketBuf reader) {
         sequenceId = reader.readUnsignedPackedInt();
         timeRemaining = reader.readByte();
     }
     
+    @Override
     public void write(PacketBuf writer) {
         writer.writeUnsignedPackedInt(sequenceId);
         writer.writeByte(timeRemaining);
     }
     
+    @Override
     public int id() {
         return RPCType.SetStartCounter.getId();
+    }
+    
+    @Override
+    public void forwardPacket(RPC rpc, RPCListener listener) {
+        listener.onSetStartCounter(rpc, this);
     }
     
     public int getSequenceId() {

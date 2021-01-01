@@ -7,13 +7,14 @@ import com.sekwah.mira4j.impl.unity.*;
 import com.sekwah.mira4j.network.decoder.ClientInListener;
 import com.sekwah.mira4j.network.packets.*;
 import com.sekwah.mira4j.network.packets.gamedata.GameDataMessage;
-import com.sekwah.mira4j.network.packets.gamedata.SpawnData;
+import com.sekwah.mira4j.network.packets.gamedata.SpawnMessage;
 import com.sekwah.mira4j.network.packets.hazel.*;
 import com.sekwah.mira4j.network.packets.net.*;
 import com.sekwah.mira4j.network.packets.rpc.*;
 import com.sekwah.mira4j.utils.GameUtils;
 import com.sekwah.mira4j.utils.TestUtil;
 
+@Deprecated
 public class ClientListener implements ClientInListener {
     private final ClientConnection manager;
     
@@ -112,8 +113,8 @@ public class ClientListener implements ClientInListener {
                 }
             }
             
-            if (msg instanceof SpawnData) {
-                SpawnData message = ((SpawnData)msg);
+            if (msg instanceof SpawnMessage) {
+                SpawnMessage message = ((SpawnMessage)msg);
                 
                 // Is -2 host ?
                 Player player = lobby.getPlayerByClientId(message.getOwnerClientId());
@@ -298,7 +299,7 @@ public class ClientListener implements ClientInListener {
         
         int control = components[0].getNetId();
         
-        GameData data = GameData.of(lobby, new SpawnData(
+        GameData data = GameData.of(lobby, new SpawnMessage(
             SpawnType.PLAYER_CONTROL,
             clientId,
             SpawnFlag.IS_CLIENT_CHARACTER,
@@ -383,4 +384,226 @@ public class ClientListener implements ClientInListener {
     public void onSyncSettings(SyncSettings packet) {}
     public void onUpdateGameData(UpdateGameData packet) {}
     public void onVotingComplete(VotingComplete packet) {}
+
+    @Override
+    public void onLobbyBehaviour(LobbyBehaviour packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onNetGameData(NetGameData packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onVoteBanSystem(VoteBanSystem packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onPlayerControl(PlayerControl packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onPlayerPhysics(PlayerPhysics packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onCustomNetworkTransform(CustomNetworkTransform packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onAddVote(RPC rpc, AddVote packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onCastVote(RPC rpc, CastVote packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onCheckColor(RPC rpc, CheckColor packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onCheckName(RPC rpc, CheckName packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onClearVote(RPC rpc, ClearVote packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onClose(RPC rpc, Close packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onCloseDoorsOfType(RPC rpc, CloseDoorsOfType packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onCompleteTask(RPC rpc, CompleteTask packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onEnterVent(RPC rpc, EnterVent packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onExiled(RPC rpc, Exiled packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onExitVent(RPC rpc, ExitVent packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onMurderPlayer(RPC rpc, MurderPlayer packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onPlayAnimation(RPC rpc, PlayAnimation packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onRepairSystem(RPC rpc, RepairSystem packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onReportDeadBody(RPC rpc, ReportDeadBody packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onSendChat(RPC rpc, SendChat packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onSendChatNote(RPC rpc, SendChatNote packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onSetColor(RPC rpc, SetColor packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onSetHat(RPC rpc, SetHat packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onSetInfected(RPC rpc, SetInfected packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onSetName(RPC rpc, SetName packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onSetPet(RPC rpc, SetPet packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onSetScanner(RPC rpc, SetScanner packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onSetSkin(RPC rpc, SetSkin packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onSetStartCounter(RPC rpc, SetStartCounter packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onSetTasks(RPC rpc, SetTasks packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onSnapTo(RPC rpc, SnapTo packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onStartMeeting(RPC rpc, StartMeeting packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onSyncSettings(RPC rpc, SyncSettings packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onUpdateGameData(RPC rpc, UpdateGameData packet) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onVotingComplete(RPC rpc, VotingComplete packet) {
+        // TODO Auto-generated method stub
+        
+    }
 }

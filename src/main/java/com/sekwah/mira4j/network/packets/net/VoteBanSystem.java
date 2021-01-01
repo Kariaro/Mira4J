@@ -1,23 +1,20 @@
 package com.sekwah.mira4j.network.packets.net;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.sekwah.mira4j.config.PlayerInfo;
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.NetType;
+import com.sekwah.mira4j.network.decoder.NetListener;
 
 public class VoteBanSystem extends ComponentDB {
-    private List<PlayerInfo> list;
+//    private List<PlayerInfo> list;
     
     public VoteBanSystem() {
-        list = new ArrayList<>();
+//        list = new ArrayList<>();
     }
     
     @Override
     public void read(PacketBuf reader, boolean isSpawning) {
         netId = reader.readUnsignedPackedInt();
-        list = new ArrayList<>();
+//        list = new ArrayList<>();
         
         if (isSpawning) {
             reader = reader.readMessage();
@@ -25,8 +22,8 @@ public class VoteBanSystem extends ComponentDB {
         
         int playerCount = reader.readUnsignedByte();
         for (int i = 0; i < playerCount; i++) {
-            PlayerInfo player = new PlayerInfo();
-            list.add(player);
+//            PlayerInfo player = new PlayerInfo();
+//            list.add(player);
             
             int clientId = reader.readInt();
             
@@ -46,7 +43,7 @@ public class VoteBanSystem extends ComponentDB {
             writer.startMessage(0);
         }
         
-        writer.writeByte(list.size());
+        writer.writeByte(0);
         
         if (isSpawning) {
             writer.endMessage();
@@ -59,8 +56,13 @@ public class VoteBanSystem extends ComponentDB {
     }
     
     @Override
+    public void forwardPacket(NetListener listener) {
+        listener.onVoteBanSystem(this);
+    }
+    
+    @Override
     public String toString() {
-        return String.format("VoteBanSystem[ netId=%s, list=%s ]", netId, list);
+        return String.format("VoteBanSystem[ netId=%s, list=%s ]", netId, null);
     }
     
 }

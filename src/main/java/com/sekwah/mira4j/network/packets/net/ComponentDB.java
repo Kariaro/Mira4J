@@ -17,6 +17,10 @@ public abstract class ComponentDB implements Component {
         this.netId = netId;
     }
     
+    public void setScene(Scene scene) {
+        this.scene = scene;
+    }
+    
     @Override
     public Scene getScene() {
         return scene;

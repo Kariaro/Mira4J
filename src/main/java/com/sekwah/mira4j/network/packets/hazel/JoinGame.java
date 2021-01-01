@@ -46,11 +46,11 @@ public class JoinGame implements HazelMessage {
     @Override
     public void write(PacketBuf writer) {
         if(reason != null) {
-            writer.writeByte(reason.getId());
+            writer.writeInt(reason.getId());
         } else {
             writer.writeInt(gameId);
             writer.writeUnsignedInt(clientId);
-            writer.writeUnsignedInt(hostId);   
+            writer.writeUnsignedInt(hostId);
         }
     }
     

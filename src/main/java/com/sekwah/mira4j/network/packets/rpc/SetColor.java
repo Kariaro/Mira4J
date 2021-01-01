@@ -2,6 +2,7 @@ package com.sekwah.mira4j.network.packets.rpc;
 
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.RPCType;
+import com.sekwah.mira4j.network.decoder.RPCListener;
 
 public class SetColor implements RPCMessage {
     private int colorId;
@@ -14,16 +15,24 @@ public class SetColor implements RPCMessage {
         this.colorId = colorId;
     }
     
+    @Override
     public void read(PacketBuf reader) {
         colorId = reader.readUnsignedByte();
     }
     
+    @Override
     public void write(PacketBuf writer) {
         writer.writeUnsignedByte(colorId);
     }
     
+    @Override
     public int id() {
         return RPCType.SetColor.getId();
+    }
+    
+    @Override
+    public void forwardPacket(RPC rpc, RPCListener listener) {
+        listener.onSetColor(rpc, this);
     }
     
     public int getColorId() {

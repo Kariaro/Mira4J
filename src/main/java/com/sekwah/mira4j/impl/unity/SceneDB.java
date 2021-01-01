@@ -74,6 +74,7 @@ public class SceneDB implements Scene {
         for (int i = 0; i < players.length; i++) {
             if (players[i] == null) {
                 players[i] = player;
+                ((PlayerDB)player).playerId = i;
                 break;
             }
         }
@@ -104,7 +105,10 @@ public class SceneDB implements Scene {
         
         if(cdb.getPlayer() == null && cdb.getScene() == null) {
             cdb.load(this, player);
-            pdb.addComponent(component);
+            System.out.println(cdb + ", Adding scene to component!");
+            if(pdb != null) {
+                pdb.addComponent(component);
+            }
             objects.put(component.getNetId(), component);
         } else {
             throw new IllegalStateException("Component already connected to a player");

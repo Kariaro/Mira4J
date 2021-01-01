@@ -2,6 +2,7 @@ package com.sekwah.mira4j.network.packets.net;
 
 import com.sekwah.mira4j.network.PacketBuf;
 import com.sekwah.mira4j.network.Packets.NetType;
+import com.sekwah.mira4j.network.decoder.NetListener;
 
 public class PlayerPhysics extends ComponentDB {
     public PlayerPhysics() {
@@ -24,6 +25,11 @@ public class PlayerPhysics extends ComponentDB {
     @Override
     public int id() {
         return NetType.PlayerPhysics.getId();
+    }
+    
+    @Override
+    public void forwardPacket(NetListener listener) {
+        listener.onPlayerPhysics(this);
     }
     
     @Override

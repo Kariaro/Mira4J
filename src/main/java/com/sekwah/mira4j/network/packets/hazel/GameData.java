@@ -14,10 +14,7 @@ import com.sekwah.mira4j.network.decoder.ClientInListener;
 import com.sekwah.mira4j.network.error.InvalidPacketException;
 import com.sekwah.mira4j.network.packets.gamedata.GameDataDecoder;
 import com.sekwah.mira4j.network.packets.gamedata.GameDataMessage;
-import com.sekwah.mira4j.network.packets.gamedata.GameDataMessage.Despawn;
-import com.sekwah.mira4j.network.packets.gamedata.GameDataMessage.Ready;
 import com.sekwah.mira4j.network.packets.gamedata.GameDataMessage.SceneChange;
-import com.sekwah.mira4j.network.packets.rpc.RPC;
 
 public class GameData implements HazelMessage {
     private final Player sender;
@@ -31,7 +28,9 @@ public class GameData implements HazelMessage {
     
     private GameData(GameLobby lobby, GameDataMessage... messages) {
         this.sender = null;
-        this.gameId = lobby.getGameId();
+        if(lobby != null) {
+            this.gameId = lobby.getGameId();
+        }
         this.messages = new ArrayList<>();
         for (GameDataMessage msg : messages) {
             this.messages.add(msg);
@@ -41,16 +40,18 @@ public class GameData implements HazelMessage {
     @Override
     public void read(PacketBuf reader) {
         gameId = reader.readInt();
-        Scene scene = GameManager.getScene(gameId);
-        if(gameId != 0 && sender.getScene() != scene) {
-            throw new InvalidPacketException("Invalid scene");
+        if(gameId != 0) {
+            Scene scene = GameManager.getScene(gameId);
+            if(sender.getScene() != scene) {
+                throw new InvalidPacketException("Invalid scene");
+            }
         }
         
         messages = new ArrayList<>();
         
         // Always use the scene of the player
         GameDataMessage msg;
-        while ((msg = GameDataDecoder.decode(scene, reader, isSpawning)) != null) {
+        while ((msg = GameDataDecoder.decode(sender.getScene(), reader, isSpawning)) != null) {
             messages.add(msg);
         }
     }
@@ -64,7 +65,7 @@ public class GameData implements HazelMessage {
             
             switch (GameDataType.fromId(msg.id())) {
                 case Despawn: {
-                    writer.writeUnsignedPackedInt(((Despawn)msg).net_id);
+                    msg.write(writer, isSpawning);
                     break;
                 }
                 case Data: {
@@ -76,11 +77,11 @@ public class GameData implements HazelMessage {
                     break;
                 }
                 case RPC: {
-                    ((RPC)msg).write(writer);
+                    msg.write(writer, isSpawning);
                     break;
                 }
                 case Ready: {
-                    writer.writeUnsignedPackedInt(((Ready)msg).client_id);
+                    msg.write(writer, isSpawning);
                     break;
                 }
                 case SceneChange: {
